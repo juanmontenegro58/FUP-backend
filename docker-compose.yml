@@ -7,13 +7,14 @@ services:
       - 8000:8000
     container_name: fup_app
     command: >
-      sh -c " python manage.py wait_for_db --settings=fup.settings.development &&
-        python manage.py runserver 0.0.0.0:8000 --settings=fup.settings.development"
+      sh -c " python manage.py wait_for_db --settings=fup.settings.develop &&
+        python manage.py runserver 0.0.0.0:8000 --settings=fup.settings.develop"
     environment:
       - MYSQL_DATABASE=fupdb
       - MYSQL_USER=fup
       - MYSQL_PASSWORD=fup_password
       - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_ROOT_USER=root
   db:
     image: mysql:8.0
     container_name: fup_mysql
@@ -22,6 +23,7 @@ services:
       - MYSQL_USER=fup
       - MYSQL_PASSWORD=fup_password
       - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_ROOT_USER=root
     volumes:
       - ./data/db:/var/lib/mysql
     ports:
