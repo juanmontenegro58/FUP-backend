@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     # Third apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -123,7 +124,12 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    # "ROTATE_REFRESH_TOKENS": True,
-    # "BLACKLIST_AFTER_ROTATION": True,
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
     "UPDATE_LAST_LOGIN": True,
 }
+
+AUTHENTICATION_BACKENDS = [
+    'fup.authentication_backend.role.CurrentRoleBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
