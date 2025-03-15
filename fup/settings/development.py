@@ -1,0 +1,29 @@
+import os
+
+from .base import *
+
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = 'django-insecure-@==x%vz4gjnv2&4pn@@*_r&o2o4c&0+r*l0+#0tm_zm@!ybc2c'
+
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = True
+
+ALLOWED_HOSTS = []
+
+# Database
+# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.environ.get('MYSQL_DATABASE'),
+        'USER': os.environ.get('MYSQL_USER'),
+        'PASSWORD': os.environ.get('MYSQL_PASSWORD'),
+        'HOST': 'db',
+        'PORT': 3306
+    }
+}
+
+# email backend para desarrollo
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
