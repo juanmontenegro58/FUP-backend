@@ -33,6 +33,11 @@ INSTALLED_APPS = [
     # Local apps
     'core',
     'custom_auth',
+    'companies',
+    'programs',
+    'agreements',
+    'practices',
+    'evaluations',
 
     # Third apps
     'rest_framework',

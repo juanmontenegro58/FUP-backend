@@ -1,0 +1,130 @@
+from django.db import models
+
+from core.models import (
+    TimeStampedBaseModel
+)
+from .choices import (
+    DEFENSE_STATUS_CHOICES,
+    DEFENSE_RESULT_CHOICES,
+    DEFENSE_TEACHER_ROLE_CHOICES
+)
+from programs.models import (
+    Student
+)
+from .teacher import (
+    Teacher
+)
+
+class Defense(TimeStampedBaseModel):
+    """ 
+    Modelo de sustentación, hereda de la clase abstracta `TimeStampedBaseModel`
+
+    Inherit:
+        TimeStampedBaseModel: Proporciona los Atributos de marca de tiempo.
+            created_at (DateTimeField): Fecha y hora de la creación.
+            updated_at (DateTimeField): Fecha y hora de modificación.
+
+    Attributes:
+        application_date (DateField): Fecha de solicitud.
+        scheduled_date (DateField): Fecha programada.
+        status (CharField): Estado de la sustentación.
+        result (CharField): Resultado final de la sustentación.
+        students (ManyToManyField): Relación de muchos a muchos con el modelo `Student`.
+        teachers (ManyToManyField): Relación de muchos a muchos con el modelo `Teacher`.
+    """
+
+    application_date = models.DateField(
+        verbose_name = 'Fecha de solicitud',
+    )
+    scheduled_date = models.DateField(
+        verbose_name = 'Fecha programada'
+    )
+    status = models.CharField(
+        max_length = 100,
+        default = 'PENDIENTE',
+        choices = DEFENSE_STATUS_CHOICES,
+        verbose_name = 'Estado'
+    )
+    result = models.CharField(
+        max_length = 100,
+        verbose_name = 'Resultado final',
+        choices = DEFENSE_RESULT_CHOICES
+    )
+    students = models.ManyToManyField(
+        Student,
+        through = 'DefenseStudentThrough'
+    )
+    teachers = models.ManyToManyField(
+        Teacher,
+        through = 'DefenseTeacherThrough'
+    )
+
+    class Meta:
+        verbose_name_plural: str = 'Sustentaciones'
+
+    def __str__(self):
+        return str(self.scheduled_date)
+    
+class DefenseStudentThrough(TimeStampedBaseModel):
+    """ 
+    Modelo intermedio entre sustentación y estudiante, 
+    hereda de la clase abstracta `TimeStampedBaseModel`
+
+    Inherit:
+        TimeStampedBaseModel: Proporciona los Atributos de marca de tiempo.
+            created_at (DateTimeField): Fecha y hora de la creación.
+            updated_at (DateTimeField): Fecha y hora de modificación.
+
+    Attributes:
+        defense (ForeignKey): Relación con el modelo `Defense`.
+        student (ForeignKey): Relación con el modelo `Student`.
+    """
+
+    defense = models.ForeignKey(
+        Defense,
+        on_delete = models.CASCADE,
+        verbose_name = 'Sustentación'
+    )
+    student = models.ForeignKey(
+        Student,
+        on_delete = models.CASCADE,
+        verbose_name = 'Estudiante'
+    )
+
+    def __str__(self):
+        return f'{self.defense} - {self.student}'
+
+class DefenseTeacherThrough(TimeStampedBaseModel):
+    """ 
+    Modelo intermedio entre sustentación y docente, 
+    hereda de la clase abstracta `TimeStampedBaseModel`
+
+    Inherit:
+        TimeStampedBaseModel: Proporciona los Atributos de marca de tiempo.
+            created_at (DateTimeField): Fecha y hora de la creación.
+            updated_at (DateTimeField): Fecha y hora de modificación.
+
+    Attributes:
+        defense (ForeignKey): Relación con el modelo `Defense`.
+        teacher (ForeignKey): Relación con el modelo `Teacher`.
+        role (CharField): Rol del docente en la sustentación
+    """
+
+    defense = models.ForeignKey(
+        Defense,
+        on_delete = models.CASCADE,
+        verbose_name = 'Sustentación'
+    )
+    teacher = models.ForeignKey(
+        Teacher,
+        on_delete = models.CASCADE,
+        verbose_name = 'Docente'
+    )
+    role = models.CharField(
+        max_length = 100,
+        verbose_name = 'Rol del docente',
+        choices = DEFENSE_TEACHER_ROLE_CHOICES
+    )
+
+    def __str__(self):
+        return f'{self.teacher} - {self.defense}'
