@@ -32,6 +32,7 @@ class Company(ContactInfoBaseModel, TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Organizaciones'
 
     def __str__(self):

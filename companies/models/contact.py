@@ -32,6 +32,7 @@ class Contact(ContactInfoBaseModel, TimeStampedBaseModel):
     company = models.ForeignKey(Company, on_delete = models.CASCADE, verbose_name = 'Organización')
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Contactos'
 
     def __str__(self):
