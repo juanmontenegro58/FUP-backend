@@ -56,7 +56,8 @@ class Agreement(TimeStampedBaseModel):
     status = models.CharField(
         max_length = 100,
         verbose_name = 'Estado',
-        choices = AGREEMENT_CHOICES
+        choices = AGREEMENT_CHOICES,
+        default = 'INACTIVO'
     )
     description = models.TextField(
         verbose_name = 'Descripción del convenio',

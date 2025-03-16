@@ -42,6 +42,7 @@ class ContactInfoBaseModel(models.Model):
     )
     email = models.EmailField(
         max_length = 255, 
+        unique = True,
         help_text = 'Dirección de correo electrónico.',
         verbose_name = _('Dirección de correo electrónico')
     )
