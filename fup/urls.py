@@ -19,8 +19,17 @@ from django.urls import (
     path,
     include
 )
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/auth/', include('custom_auth.urls'))
+    path('api/v1/auth/', include('custom_auth.urls')),
+    path('api/v1/', include('companies.urls')),
+
 ]
+
+if settings.DEBUG:
+    urlpatterns += [
+        path("auth/", include("rest_framework.urls")),
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
