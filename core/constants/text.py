@@ -1,0 +1,1 @@
+NOT_IMPLEMENTED_ERROR = 'method not implemented'

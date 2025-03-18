@@ -21,15 +21,33 @@ from django.urls import (
 )
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.routers import DefaultRouter
+import debug_toolbar
+
+from agreements.views import (
+    AgreementViewSet,
+    DocumentAgreementViewSet
+)
+from companies.views import (
+    CompanyViewSet,
+    ContactViewSet
+)
+
+router = DefaultRouter()
+router.register(r'companies', CompanyViewSet, basename = 'company')
+router.register(r'contacts', ContactViewSet, basename = 'contact')
+router.register(r'documents', DocumentAgreementViewSet, basename = 'document_agreement')
+router.register(r'agreements', AgreementViewSet, basename = 'agreement')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('custom_auth.urls')),
-    path('api/v1/', include('companies.urls')),
+    path('api/v1/', include(router.urls)),
 
 ]
 
 if settings.DEBUG:
     urlpatterns += [
         path("auth/", include("rest_framework.urls")),
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        path("__debug__/", include(debug_toolbar.urls)),
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

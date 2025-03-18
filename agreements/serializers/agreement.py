@@ -1,0 +1,67 @@
+from rest_framework import serializers
+
+from ..models import (
+    Agreement,
+    DocumentAgreement,
+    AgreementDocumentThrough
+)
+from .document_agreement import (
+    AgreementDocumentThroughModelSerializer
+)
+
+class AgreementDocumentModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AgreementDocumentThrough
+        fields = '__all__'
+        depth = 1
+
+class AgreementCreateModelSerializer(serializers.ModelSerializer):
+
+    documents = serializers.PrimaryKeyRelatedField(
+        queryset = DocumentAgreement.objects.all(),
+        many = True,
+        write_only = True
+    )
+    status = serializers.CharField(read_only = True)
+    
+    class Meta:
+        model = Agreement
+        exclude = ['students']
+
+    def validate(self, attrs):
+        initial_date = attrs['initial_date']
+        end_date = attrs['end_date']
+
+        if initial_date > end_date:
+            raise serializers.ValidationError({
+                'end_date': 'La fecha de finalización debe ser posterior a la fecha inicial'
+            })
+        return attrs
+
+    def validate_documents(self, value):
+        """ Valida que la lista de documentos no este vacia. """
+        if not value:
+            raise serializers.ValidationError(
+                'Debe incluir al menos un documento en el convenio'
+            )
+        return value
+
+    def create(self, validated_data):
+        documents = validated_data.pop('documents')
+
+        agreement = Agreement.objects.create(**validated_data)
+        agreement.documents.add(*documents)
+        return agreement
+    
+class AgreementDetailModelSerializer(serializers.ModelSerializer):
+
+    documents = AgreementDocumentThroughModelSerializer(
+        source = 'agreementdocumentthrough_set',
+        many = True, 
+        read_only = True
+    )
+    
+    class Meta:
+        model = Agreement
+        exclude = ['students']
+        depth = 1

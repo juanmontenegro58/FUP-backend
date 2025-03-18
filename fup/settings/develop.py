@@ -19,6 +19,13 @@ ALLOWED_HOSTS = [
     'localhost',
 ]
 
+INSTALLED_APPS += [
+    'debug_toolbar',
+]
+
+DEBUG_TOOLBAR_CONFIG = {
+    "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+}
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 

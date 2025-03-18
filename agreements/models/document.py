@@ -34,6 +34,7 @@ class DocumentAgreement(TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Documentos convenio'
 
     def __str__(self):

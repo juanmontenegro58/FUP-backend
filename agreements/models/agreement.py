@@ -18,8 +18,18 @@ from .document import (
 )
 from .choices import (
     AGREEMENT_CHOICES,
-    AGREEMENT_DOCUMENT_CHOICES
+    AGREEMENT_DOCUMENT_CHOICES,
+    AGREEMENT_DOCUMENTATION_STATUS
 )
+
+def custom_upload_document(instance, filename):
+    try:
+        old_instance: AgreementDocumentThrough = AgreementDocumentThrough.objects.get(pk = instance.pk)
+        if old_instance.file:
+            old_instance.file.delete()
+    except AgreementDocumentThrough.DoesNotExist:
+        pass
+    return f'assets/{instance.agreement.name.replace(" ","_")}/documents/{filename}'
 
 class Agreement(TimeStampedBaseModel):
     """ 
@@ -69,6 +79,12 @@ class Agreement(TimeStampedBaseModel):
         verbose_name = 'Requisitos para aplicación',
         max_length = 2000
     )
+    documentation_status = models.CharField(
+        max_length = 100,
+        verbose_name = 'Estado de documentación',
+        choices = AGREEMENT_DOCUMENTATION_STATUS,
+        default = 'PENDIENTE'
+    )
     company = models.ForeignKey(
         Company,
         on_delete = models.PROTECT,
@@ -91,6 +107,7 @@ class Agreement(TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Convenios'
 
     def __str__(self):
@@ -158,12 +175,14 @@ class AgreementDocumentThrough(TimeStampedBaseModel):
     file = models.FileField(
         verbose_name = 'Archivo',
         null = True,
-        blank = True
+        blank = True,
+        upload_to = custom_upload_document
     )
     status = models.CharField(
         max_length = 100,
         verbose_name = 'Estado',
-        default = 'PENDIENTE'
+        default = 'PENDIENTE',
+        choices = AGREEMENT_DOCUMENT_CHOICES
     )
     upload_date = models.DateTimeField(
         verbose_name = 'Fecha de subida',
@@ -177,6 +196,14 @@ class AgreementDocumentThrough(TimeStampedBaseModel):
         null = True,
         blank = True
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields = ['agreement', 'document_agreement'],
+                name = 'unique_agreement_document'
+            )
+        ]
 
     def __str__(self):
         return f'{self.agreement} - {self.document_agreement}'
