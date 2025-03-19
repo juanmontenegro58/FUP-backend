@@ -23,6 +23,10 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import SimpleRouter
 import debug_toolbar
+from drf_spectacular.views import (
+    SpectacularSwaggerView,
+    SpectacularAPIView
+)
 
 from agreements.views import (
     AgreementViewSet,
@@ -43,6 +47,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/auth/', include('custom_auth.urls')),
     path('api/v1/', include(router.urls)),
+
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/v1/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 
 ]
 

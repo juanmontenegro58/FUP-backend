@@ -1,5 +1,8 @@
 from rest_framework import viewsets
-from rest_framework.response import Response
+from drf_spectacular.utils import (
+    extend_schema_view,
+    extend_schema
+)
 
 from ..serializers.contact import (
     ContactModelSerializer,
@@ -9,6 +12,29 @@ from ..models import (
     Contact
 )
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="Listar contactos",
+        description="Devuelve una lista de todos los contactos registrados.",
+        tags = ['Contacto']
+    ),
+    retrieve=extend_schema(
+        summary="Obtener un contacto",
+        description="Obtiene los detalles de un contacto específico por su ID.",
+        tags = ['Contacto']
+    ),
+    create=extend_schema(
+        summary="Crear un nuevo contacto",
+        description="Registra un nuevo contacto en el sistema.",
+        tags = ['Contacto']
+    ),
+    update=extend_schema(
+        summary="Actualizar un contacto",
+        description="Actualiza todos los campos de un contacto existente.",
+        tags = ['Contacto']
+    ),
+    
+)
 class ContactViewSet(viewsets.ModelViewSet):
 
     serializer_class = ContactModelSerializer

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'django_filters',
     'corsheaders',
+    'drf_spectacular', # Para la documentación automática de la api
 ]
 
 MIDDLEWARE = [
@@ -138,6 +139,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 10,
     "DEFAULT_FILTER_BACKENDS": [
@@ -165,3 +167,10 @@ AUTHENTICATION_BACKENDS = [
     'fup.authentication_backend.role.CurrentRoleBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'FUP',
+    'DESCRIPTION': 'Your project description',
+    'VERSION': '0.0.1',
+    'SERVE_INCLUDE_SCHEMA': False,
+}

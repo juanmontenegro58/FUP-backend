@@ -9,6 +9,10 @@ from rest_framework import (
 )
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from drf_spectacular.utils import (
+    extend_schema,
+    extend_schema_view
+)
 
 from ..models import (
     Agreement
@@ -32,6 +36,29 @@ from core.validators.validator import (
     ValidatorRules
 )
 
+@extend_schema_view(
+    list=extend_schema(
+        summary="Listar convenios",
+        description="Devuelve una lista de todos los convenios registrados.",
+        tags = ['Convenio']
+    ),
+    retrieve=extend_schema(
+        summary="Obtener un convenio",
+        description="Obtiene los detalles de un convenio específico por su ID.",
+        tags = ['Convenio']
+    ),
+    create=extend_schema(
+        summary="Crear un nuevo convenio",
+        description="Registra un nuevo convenio en el sistema.",
+        tags = ['Convenio']
+    ),
+    update=extend_schema(
+        summary="Actualizar un convenio",
+        description="Actualiza todos los campos de un convenio existente.",
+        tags = ['Convenio']
+    ),
+    
+)
 class AgreementViewSet(viewsets.ModelViewSet):
 
     queryset = Agreement.objects.all()
@@ -47,6 +74,12 @@ class AgreementViewSet(viewsets.ModelViewSet):
             return AgreementDocumentThroughModelSerializer
         return super().get_serializer_class()
 
+    @extend_schema(
+        summary = 'Listar documentos del convenio',
+        description = 'Obtiene la lista de documentos asociados a un convenio específico.',
+        responses = {200: AgreementDocumentThroughModelSerializer(many = True)},
+        tags = ['Convenio']
+    )
     @action(detail = True, methods = ['get'], url_path = 'documents')
     def documents(self, request, pk = None):
         repository = AgreementDocumentThroughRepository()
@@ -60,6 +93,11 @@ class AgreementViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    @extend_schema(
+        summary = 'Cargar documentos del convenio',
+        description = 'Permite la carga de multiples documentos asociados al convenio.',
+        tags = ['Convenio']
+    )
     @action(detail = True, methods = ['post'], url_path = 'documents/upload')
     def upload_documents(self, request, pk = None):
         """  

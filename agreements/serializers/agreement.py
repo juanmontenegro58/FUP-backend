@@ -8,6 +8,9 @@ from ..models import (
 from .document_agreement import (
     AgreementDocumentThroughModelSerializer
 )
+from companies.serializers.company import (
+    CompanyModelSerializer
+)
 
 class AgreementDocumentModelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -64,7 +67,6 @@ class AgreementDetailModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agreement
         exclude = ['students']
-        depth = 1
 
 class AgreementDocumentUploadSerializer(serializers.Serializer):
 
