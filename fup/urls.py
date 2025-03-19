@@ -21,7 +21,7 @@ from django.urls import (
 )
 from django.conf import settings
 from django.conf.urls.static import static
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 import debug_toolbar
 
 from agreements.views import (
@@ -33,7 +33,7 @@ from companies.views import (
     ContactViewSet
 )
 
-router = DefaultRouter()
+router = SimpleRouter(trailing_slash = False)
 router.register(r'companies', CompanyViewSet, basename = 'company')
 router.register(r'contacts', ContactViewSet, basename = 'contact')
 router.register(r'documents', DocumentAgreementViewSet, basename = 'document_agreement')

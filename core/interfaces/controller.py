@@ -10,18 +10,21 @@ from .repository import RepositoryInterface
 from ..constants.text import (
     NOT_IMPLEMENTED_ERROR
 )
+from ..validators.validator import ValidatorRules
 
 
 class ControllerInterface(ABC):
     def __init__(
         self, 
         raw_data: Dict[str, Any], 
-        repository: RepositoryInterface
+        repository: RepositoryInterface,
+        validator: ValidatorRules
     ):
         self.raw_data = raw_data
         self.repository = repository
+        self.validator = validator
 
     @abstractmethod
     def execute(self) -> Any:
         """Método abstracto que cada controlador debe implementar."""
-        raise NOT_IMPLEMENTED_ERROR
+        raise NotImplementedError(NOT_IMPLEMENTED_ERROR)

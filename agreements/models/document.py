@@ -28,10 +28,6 @@ class DocumentAgreement(TimeStampedBaseModel):
         max_length = 500,
         verbose_name = 'Descripción'
     )
-    required = models.BooleanField(
-        default = True,
-        verbose_name = '¿Obligatorio?'
-    )
 
     class Meta:
         ordering = ['created_at']

@@ -4,6 +4,9 @@ from ..models import (
     DocumentAgreement,
     AgreementDocumentThrough
 )
+from custom_auth.serializers.user import (
+    UserListModelSerializer
+)
 
 class DocumentAgreementModelSerializer(serializers.ModelSerializer):
 
@@ -14,6 +17,7 @@ class DocumentAgreementModelSerializer(serializers.ModelSerializer):
 class AgreementDocumentThroughModelSerializer(serializers.ModelSerializer):
 
     document_agreement = DocumentAgreementModelSerializer()
+    uploaded_by = UserListModelSerializer()
 
     class Meta:
         model = AgreementDocumentThrough

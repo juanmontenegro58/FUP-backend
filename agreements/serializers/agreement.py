@@ -65,3 +65,21 @@ class AgreementDetailModelSerializer(serializers.ModelSerializer):
         model = Agreement
         exclude = ['students']
         depth = 1
+
+class AgreementDocumentUploadSerializer(serializers.Serializer):
+
+    files = serializers.ListField(
+        child = serializers.FileField(),
+        allow_empty = False
+    )
+    through_ids = serializers.ListField(
+        child = serializers.IntegerField(),
+        allow_empty = False
+    )
+
+    def validate(self, attrs):
+        if len(attrs['files']) != len(set(attrs['through_ids'])):
+            raise serializers.ValidationError(
+                'La información enviada no es correcta o no tiene el formato esperado.'
+            )
+        return attrs

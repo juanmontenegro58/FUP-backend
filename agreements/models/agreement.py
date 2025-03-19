@@ -198,6 +198,7 @@ class AgreementDocumentThrough(TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['created_at']
         constraints = [
             models.UniqueConstraint(
                 fields = ['agreement', 'document_agreement'],
