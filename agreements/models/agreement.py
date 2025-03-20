@@ -19,7 +19,8 @@ from .document import (
 from .choices import (
     AGREEMENT_CHOICES,
     AGREEMENT_DOCUMENT_CHOICES,
-    AGREEMENT_DOCUMENTATION_STATUS
+    AGREEMENT_DOCUMENTATION_STATUS,
+    AGREEMENT_STUDENT_STATUS
 )
 
 def custom_upload_document(instance, filename):
@@ -126,6 +127,7 @@ class AgreementStudentThrough(TimeStampedBaseModel):
     Attributes:
         agreement (ForeignKey): Relación con el modelo `Agreement`.
         student (ForeignKey): Relación con el modelo `Student`.
+        status (CharField): Indica el estado del estudiante en el convenio.
     """
 
     agreement = models.ForeignKey(
@@ -137,6 +139,12 @@ class AgreementStudentThrough(TimeStampedBaseModel):
         Student,
         on_delete = models.CASCADE,
         verbose_name = 'Estudiante'
+    )
+    status = models.CharField(
+        max_length = 100,
+        verbose_name = 'Estado',
+        choices = AGREEMENT_STUDENT_STATUS,
+        default = 'ACTIVO'
     )
 
     def __str__(self):

@@ -29,6 +29,7 @@ class Program(TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Programas'
 
     def __str__(self):

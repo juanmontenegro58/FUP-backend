@@ -22,7 +22,6 @@ from django.urls import (
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework.routers import SimpleRouter
-import debug_toolbar
 from drf_spectacular.views import (
     SpectacularSwaggerView,
     SpectacularAPIView
@@ -36,12 +35,18 @@ from companies.views import (
     CompanyViewSet,
     ContactViewSet
 )
+from programs.views import (
+    ProgramViewSet,
+    StudentViewSet
+)
 
 router = SimpleRouter(trailing_slash = False)
 router.register(r'companies', CompanyViewSet, basename = 'company')
 router.register(r'contacts', ContactViewSet, basename = 'contact')
 router.register(r'documents', DocumentAgreementViewSet, basename = 'document_agreement')
 router.register(r'agreements', AgreementViewSet, basename = 'agreement')
+router.register(r'programs', ProgramViewSet, basename = 'program')
+router.register(r'students', StudentViewSet, basename = 'student')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -56,5 +61,4 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += [
         path("auth/", include("rest_framework.urls")),
-        path("__debug__/", include(debug_toolbar.urls)),
     ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) + static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)

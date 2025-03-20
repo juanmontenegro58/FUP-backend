@@ -20,13 +20,15 @@ from ..models import (
 from ..serializers.agreement import (
     AgreementCreateModelSerializer,
     AgreementDetailModelSerializer,
-    AgreementDocumentUploadSerializer
+    AgreementDocumentUploadSerializer,
+    AgreementAssignStudentSerializer
 )
 from ..serializers.document_agreement import (
     AgreementDocumentThroughModelSerializer
 )
 from ..controllers.agreement import (
-    AgreementUploadDocumentController
+    AgreementUploadDocumentController,
+    AgreementAssignStudentController
 )
 from ..repositories.agreement import (
     AgreementRepository,
@@ -34,6 +36,9 @@ from ..repositories.agreement import (
 )
 from core.validators.validator import (
     ValidatorRules
+)
+from programs.repositories.student import (
+    StudentRepository
 )
 
 @extend_schema_view(
@@ -72,6 +77,8 @@ class AgreementViewSet(viewsets.ModelViewSet):
             return AgreementDocumentUploadSerializer
         if self.action == 'documents':
             return AgreementDocumentThroughModelSerializer
+        if self.action == 'assign_student':
+            return AgreementAssignStudentSerializer
         return super().get_serializer_class()
 
     @extend_schema(
@@ -139,5 +146,43 @@ class AgreementViewSet(viewsets.ModelViewSet):
             )
         return Response(
             {'message': 'Archivos subidos correctamente'},
-            status = status.HTTP_201_CREATED
+            status = status.HTTP_200_OK
+        )
+    
+    @extend_schema(
+        summary = 'Asignación de estudiante',
+        description = 'Permite la asignación de un estudiante al convenio',
+        tags = ['Convenio']
+    )
+    @action(detail = True, methods = ['post'], url_path = 'assign-student')
+    def assign_student(self, request, pk = None):
+
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+        
+        data = serializer.data
+        data['agreement'] = self.get_object()
+
+        try:
+            controller = AgreementAssignStudentController(
+                raw_data = data,
+                repository = StudentRepository(),
+                validator = ValidatorRules()
+            )
+            controller.execute()
+        except ValidationError as e:
+            return Response(
+                {'message': ' '.join(e.messages)},
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        except Exception as e:
+            return Response(
+                {'message': 'Error interno, por favor intenta más tarde.'},
+                status = status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response({
+            'message': 'Estudiante asignado correctamente',
+        },
+            status = status.HTTP_200_OK
         )

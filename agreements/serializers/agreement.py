@@ -11,6 +11,9 @@ from .document_agreement import (
 from companies.serializers.company import (
     CompanyModelSerializer
 )
+from programs.models import (
+    Student
+)
 
 class AgreementDocumentModelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -85,3 +88,9 @@ class AgreementDocumentUploadSerializer(serializers.Serializer):
                 'La información enviada no es correcta o no tiene el formato esperado.'
             )
         return attrs
+    
+class AgreementAssignStudentSerializer(serializers.Serializer):
+
+    student = serializers.PrimaryKeyRelatedField(
+        queryset = Student.objects.all()
+    )

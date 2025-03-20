@@ -79,6 +79,7 @@ class Student(TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Estudiantes'
 
     def __str__(self):

@@ -17,7 +17,12 @@ from ..models import (
 from ..validators.agreement import (
     AgreementDocumentationStatusValidator,
     AgreementDocumentRelationValidator,
-    AgreementDocumentStatusValidator
+    AgreementDocumentStatusValidator,
+    AgreementActiveValidator,
+    UniqueStudentInAgreementValidator
+)
+from programs.models import (
+    Student
 )
 
 class AgreementUploadDocumentController(ControllerInterface):
@@ -145,3 +150,74 @@ class AgreementUploadDocumentController(ControllerInterface):
         self.validator.add_rules(rules = self.validations)
         self.validator.validate(data = self.raw_data)
         self.iter_documents()
+
+class AgreementAssignStudentController(ControllerInterface):
+
+    """
+    Controlador para la asignación de un estudiante a un convenio.
+
+    Este controlador gestiona la validación y asignación de un estudiante 
+    a un convenio, asegurando que el convenio esté activo y que el estudiante 
+    no esté previamente asignado a otro convenio.
+
+    Attrs:
+        validations (list): Lista de validadores que se aplicarán antes de 
+                            asignar al estudiante.
+    """
+    
+    validations = [
+        AgreementActiveValidator,
+        UniqueStudentInAgreementValidator
+    ]
+
+    def get_student(self) -> Student:
+        """
+        Obtiene el estudiante a partir del ID proporcionado en los datos de entrada.
+
+        Returns:
+            Student: Instancia del estudiante recuperado desde el repositorio.
+        """
+        return (
+            self
+            .repository
+            .get_by_id(
+                obj_id = self.raw_data['student']
+            )
+        )
+    
+    def assign_student(self):
+        """
+        Asigna el estudiante al convenio correspondiente.
+
+        Este método agrega el estudiante a la lista de estudiantes asociados 
+        al convenio almacenado en los datos de entrada.
+        """
+        agreement: Agreement = self.raw_data['agreement']
+        agreement.students.add(self.raw_data['student'])
+    
+    def preload_data(self):
+        """
+        Precarga los datos necesarios antes de ejecutar la validación.
+
+        Este método obtiene la instancia del estudiante y la almacena en 
+        `self.raw_data` para su posterior uso en las validaciones y asignación.
+        """
+
+        self.raw_data['student'] = self.get_student()
+
+    def execute(self):
+        """
+        Ejecuta el proceso de validación y asignación del estudiante al convenio.
+
+        - Precarga los datos necesarios.
+        - Agrega las reglas de validación definidas en `validations`.
+        - Valida los datos de entrada utilizando los validadores.
+        - Asigna el estudiante al convenio si las validaciones son exitosas.
+
+        Raises:
+            ValidationError: Si alguna de las validaciones falla.
+        """
+        self.preload_data()
+        self.validator.add_rules(rules = self.validations)
+        self.validator.validate(data = self.raw_data)
+        self.assign_student()

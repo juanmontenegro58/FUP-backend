@@ -4,7 +4,7 @@ from rest_framework import status
 class CompanyViewTest(APITestCase):
 
     def setUp(self):
-        self.base_url = '/api/v1/companies/'
+        self.base_url = '/api/v1/companies'
 
     def test_create_company(self):
         """ Verifica que la vista cree una empresa correctamente. """

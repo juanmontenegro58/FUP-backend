@@ -11,6 +11,9 @@ from ..enums import (
     AgreementDocumentationStatusEnum,
     AgreementDocumentStatusEnum
 )
+from ..repositories.agreement import (
+    AgreementStudentThroughRepository
+)
 
 class AgreementDocumentationStatusValidator(ValidatorInterface):
 
@@ -68,3 +71,52 @@ class AgreementDocumentStatusValidator(ValidatorInterface):
         for item in data['through_db']:
             if item.status.upper() == AgreementDocumentStatusEnum.APROBADO.value:
                 raise ValidationError('No se puede actualizar un documento cuando esta aprobado.')
+
+class AgreementActiveValidator(ValidatorInterface):
+
+    @staticmethod
+    def validate(data):
+        """
+        Verifica que el convenio tenga el estado `ACTIVO`.
+
+        Este método revisa si el convenio proporcionado en los datos de entrada 
+        tiene el estado 'ACTIVO'. Si el convenio no está activo, se lanza una excepción 
+        para evitar la continuación del proceso.
+
+        Args:
+            data (dict): Un diccionario que contiene la clave `agreement`, 
+                        la cual debe ser la instancia del modelo `Agreement`.
+
+        Raises:
+            ValidationError: Se lanza si el convenio no se encuentra activo.
+        """
+        if data['agreement'].status != 'ACTIVO':
+            raise ValidationError('El convenio no se encuentra activo.')
+
+class UniqueStudentInAgreementValidator(ValidatorInterface):
+
+    @staticmethod
+    def validate(data):
+        """
+        Verifica que el estudiante no esté asignado a un convenio existente.
+
+        Este método consulta el repositorio de convenios-estudiantes para determinar 
+        si el estudiante ya está vinculado a algún convenio con estado `ACTIVO`. Si se encuentra una coincidencia, 
+        se lanza una excepción para evitar la duplicación.
+
+        Args:
+            data (dict): Un diccionario que contiene la clave `student`, 
+                        que es una instancia del modelo `Student`.
+
+        Raises:
+            ValidationError: Se lanza si el estudiante ya está asignado a un convenio.
+        """
+        repository = AgreementStudentThroughRepository()
+        queryset = (
+            repository
+            .filter(
+                student = data['student']
+            )
+        )
+        if queryset.exists():
+            raise ValidationError('El estudiante ya se encuentra asignado a un convenio.')

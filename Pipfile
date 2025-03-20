@@ -9,7 +9,6 @@ djangorestframework = "*"
 django-filter = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
-django-debug-toolbar = "*"
 drf-spectacular = "*"
 
 [dev-packages]
