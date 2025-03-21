@@ -48,7 +48,8 @@ class Defense(TimeStampedBaseModel):
     result = models.CharField(
         max_length = 100,
         verbose_name = 'Resultado final',
-        choices = DEFENSE_RESULT_CHOICES
+        choices = DEFENSE_RESULT_CHOICES,
+        default = 'N/A'
     )
     students = models.ManyToManyField(
         Student,
@@ -60,6 +61,7 @@ class Defense(TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Sustentaciones'
 
     def __str__(self):
@@ -90,6 +92,9 @@ class DefenseStudentThrough(TimeStampedBaseModel):
         on_delete = models.CASCADE,
         verbose_name = 'Estudiante'
     )
+
+    class Meta:
+        ordering = ['created_at']
 
     def __str__(self):
         return f'{self.defense} - {self.student}'
@@ -125,6 +130,9 @@ class DefenseTeacherThrough(TimeStampedBaseModel):
         verbose_name = 'Rol del docente',
         choices = DEFENSE_TEACHER_ROLE_CHOICES
     )
+
+    class Meta:
+        ordering = ['created_at']
 
     def __str__(self):
         return f'{self.teacher} - {self.defense}'

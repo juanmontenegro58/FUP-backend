@@ -39,6 +39,10 @@ from programs.views import (
     ProgramViewSet,
     StudentViewSet
 )
+from evaluations.views import (
+    TeacherViewSet,
+    DefenseViewSet
+)
 
 router = SimpleRouter(trailing_slash = False)
 router.register(r'companies', CompanyViewSet, basename = 'company')
@@ -47,6 +51,8 @@ router.register(r'documents', DocumentAgreementViewSet, basename = 'document_agr
 router.register(r'agreements', AgreementViewSet, basename = 'agreement')
 router.register(r'programs', ProgramViewSet, basename = 'program')
 router.register(r'students', StudentViewSet, basename = 'student')
+router.register(r'teachers', TeacherViewSet, basename = 'teacher')
+router.register(r'defenses', DefenseViewSet, basename = 'defense')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

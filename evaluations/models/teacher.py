@@ -64,6 +64,7 @@ class Teacher(TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Docentes'
 
     def __str__(self):

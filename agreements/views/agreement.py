@@ -71,15 +71,19 @@ class AgreementViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'put']
 
     def get_serializer_class(self):
-        if self.action == 'retrieve':
-            return AgreementDetailModelSerializer
-        if self.action == 'upload_documents':
-            return AgreementDocumentUploadSerializer
-        if self.action == 'documents':
-            return AgreementDocumentThroughModelSerializer
-        if self.action == 'assign_student':
-            return AgreementAssignStudentSerializer
-        return super().get_serializer_class()
+        serializers = {
+            'retrieve': AgreementDetailModelSerializer,
+            'upload_documents': AgreementDocumentUploadSerializer,
+            'documents': AgreementDocumentThroughModelSerializer,
+            'assign_student': AgreementAssignStudentSerializer
+        }
+        return (
+            serializers
+            .get(
+                self.action,
+                super().get_serializer_class()
+            )
+        )
 
     @extend_schema(
         summary = 'Listar documentos del convenio',
