@@ -216,3 +216,38 @@ class AgreementDocumentThrough(TimeStampedBaseModel):
 
     def __str__(self):
         return f'{self.agreement} - {self.document_agreement}'
+    
+class AgreementDocumentComment(TimeStampedBaseModel):
+
+    previous_state = models.CharField(
+        max_length = 100,
+        verbose_name = 'Estado anterior',
+        choices = AGREEMENT_DOCUMENT_CHOICES,
+        null = True
+    )
+    new_state = models.CharField(
+        max_length = 100,
+        verbose_name = 'Nuevo estado',
+        choices = AGREEMENT_DOCUMENT_CHOICES
+    )
+    comment = models.TextField(
+        max_length = 500,
+        verbose_name = 'Comentario'
+    )
+    created_by = models.ForeignKey(
+        CustomUser,
+        on_delete = models.PROTECT,
+        verbose_name = 'Creado por'
+    )
+    agreement_document = models.ForeignKey(
+        AgreementDocumentThrough,
+        on_delete = models.PROTECT,
+        verbose_name = 'Documento del convenio'
+    )
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name_plural: str = 'Comentarios de documento de convenio'
+
+    def __str__(self):
+        return self.new_state

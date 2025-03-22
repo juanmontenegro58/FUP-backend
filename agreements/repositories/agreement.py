@@ -5,7 +5,8 @@ from core.interfaces.repository import (
 from ..models import (
     Agreement,
     AgreementDocumentThrough,
-    AgreementStudentThrough
+    AgreementStudentThrough,
+    AgreementDocumentComment
 )
 
 class AgreementRepository(RepositoryInterface[Agreement]):
@@ -22,3 +23,8 @@ class AgreementStudentThroughRepository(RepositoryInterface[AgreementStudentThro
 
     def __init__(self):
         super().__init__(AgreementStudentThrough)
+
+class AgreementDocumentCommentRepository(RepositoryInterface[AgreementDocumentComment]):
+
+    def __init__(self):
+        super().__init__(AgreementDocumentComment)

@@ -28,3 +28,20 @@ class ControllerInterface(ABC):
     def execute(self) -> Any:
         """Método abstracto que cada controlador debe implementar."""
         raise NotImplementedError(NOT_IMPLEMENTED_ERROR)
+
+class ControllerMultiRepositoryInterface(ABC):
+
+    def __init__(
+        self,
+        raw_data: Dict[str, Any],
+        validator: ValidatorRules,
+        repositories: Dict[str, RepositoryInterface]
+    ):
+        self.raw_data = raw_data
+        self.validator = validator
+        self.repositories = repositories
+
+    @abstractmethod
+    def execute(self) -> Any:
+        """Método abstracto que cada controlador debe implementar."""
+        raise NotImplementedError(NOT_IMPLEMENTED_ERROR)

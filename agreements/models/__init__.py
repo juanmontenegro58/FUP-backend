@@ -1,7 +1,8 @@
 from .agreement import (
     Agreement,
     AgreementStudentThrough,
-    AgreementDocumentThrough
+    AgreementDocumentThrough,
+    AgreementDocumentComment
 )
 from .document import (
     DocumentAgreement

@@ -14,6 +14,10 @@ from ..enums import (
 from ..repositories.agreement import (
     AgreementStudentThroughRepository
 )
+from ..models import (
+    Agreement,
+    AgreementDocumentThrough
+)
 
 class AgreementDocumentationStatusValidator(ValidatorInterface):
 
@@ -120,3 +124,45 @@ class UniqueStudentInAgreementValidator(ValidatorInterface):
         )
         if queryset.exists():
             raise ValidationError('El estudiante ya se encuentra asignado a un convenio.')
+        
+class AgreementDocumentOneRelationValidator(ValidatorInterface):
+
+    @staticmethod
+    def validate(data):
+        """Verifica si el documento está asociado al acuerdo antes de permitir su modificación.
+
+        Args:
+            data (dict): Datos necesarios para la validación.
+                - agreement (Agreement): Acuerdo al que debería pertenecer el documento.
+                - document_agreement_id (int): ID del documento que se intenta modificar, este id debe ser del modelo intermedio AgreementDocumentThrough.
+
+        Raises:
+            PermissionDenied: Si el documento no está relacionado con el acuerdo.
+        """
+        
+        agreement: Agreement = data['agreement']
+
+        if not agreement.agreementdocumentthrough_set.filter(
+            document_agreement__id = data['document_agreement_id']
+        ).exists():
+            raise PermissionDenied('No estas autorizado para la modificación de este documento.')
+
+class AgreementDifferentStatusValidator(ValidatorInterface):
+
+    @staticmethod
+    def validate(data):
+        """Impide que un documento mantenga el mismo estado cuando se intenta actualizar.
+
+        Args:
+            data (dict): Datos necesarios para la validación.
+                - document_agreement (AgreementDocumentThrough): Documento del acuerdo a modificar.
+                - status (str): Nuevo estado que se desea asignar.
+
+        Raises:
+            ValidationError: Si el nuevo estado es igual al estado actual del documento.
+        """
+        
+        document_agreement: AgreementDocumentThrough = data['agreement_document']
+
+        if document_agreement.status == data['status']:
+            raise ValidationError('El nuevo estado no puede ser el mismo que el actual.')

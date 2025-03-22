@@ -14,6 +14,12 @@ from companies.serializers.company import (
 from programs.models import (
     Student
 )
+from ..models.choices import (
+    AGREEMENT_DOCUMENT_UPDATE_STATUS_CHOICES
+)
+from ..enums import (
+    AgreementDocumentStatusEnum
+)
 
 class AgreementDocumentModelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -94,3 +100,18 @@ class AgreementAssignStudentSerializer(serializers.Serializer):
     student = serializers.PrimaryKeyRelatedField(
         queryset = Student.objects.all()
     )
+
+class AgreementDocumentChangeStateSerializer(serializers.Serializer):
+
+    status = serializers.ChoiceField(
+        choices = AGREEMENT_DOCUMENT_UPDATE_STATUS_CHOICES
+    )
+    comment = serializers.CharField(
+        allow_null = True
+    )
+
+    def validate(self, attrs):
+        if attrs['status'] == AgreementDocumentStatusEnum.RECHAZADO.value and not attrs.get('comment'):
+            raise serializers.ValidationError({'comment': 'Debes proporcionar un comentario.'})
+
+        return attrs

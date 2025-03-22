@@ -1,11 +1,15 @@
 from django.core.exceptions import (
     ValidationError,
-    PermissionDenied
+    PermissionDenied,
+    ObjectDoesNotExist
 )
 from django.db import transaction
 from rest_framework import (
     viewsets,
     status
+)
+from rest_framework.views import (
+    APIView
 )
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -21,18 +25,21 @@ from ..serializers.agreement import (
     AgreementCreateModelSerializer,
     AgreementDetailModelSerializer,
     AgreementDocumentUploadSerializer,
-    AgreementAssignStudentSerializer
+    AgreementAssignStudentSerializer,
+    AgreementDocumentChangeStateSerializer
 )
 from ..serializers.document_agreement import (
     AgreementDocumentThroughModelSerializer
 )
 from ..controllers.agreement import (
     AgreementUploadDocumentController,
-    AgreementAssignStudentController
+    AgreementAssignStudentController,
+    UpdateAgreementDocumentStatusController
 )
 from ..repositories.agreement import (
     AgreementRepository,
-    AgreementDocumentThroughRepository
+    AgreementDocumentThroughRepository,
+    AgreementDocumentCommentRepository
 )
 from core.validators.validator import (
     ValidatorRules
@@ -190,3 +197,59 @@ class AgreementViewSet(viewsets.ModelViewSet):
         },
             status = status.HTTP_200_OK
         )
+    
+class UpdateAgreementDocumentStatusView(APIView):
+
+    serializer_class = AgreementDocumentChangeStateSerializer
+
+    @extend_schema(
+        summary = 'Cambiar estado del documento',
+        description = 'Permite cambiar el estado del documento.',
+        tags = ['Convenio']
+    )
+    def post(self, request, agreement_id, document_agreement_id):
+
+        serializer = AgreementDocumentChangeStateSerializer(
+            data = request.data
+        )
+        serializer.is_valid(raise_exception = True)
+
+        data = {
+            **serializer.data,
+            'user': request.user,
+            'agreement_id': agreement_id,
+            'document_agreement_id': document_agreement_id
+        }
+
+        repositories = {
+            'agreement': AgreementRepository(),
+            'agreement_document': AgreementDocumentThroughRepository(),
+            'comment': AgreementDocumentCommentRepository()
+        }
+
+        try:
+            controller = UpdateAgreementDocumentStatusController(
+                raw_data = data,
+                validator = ValidatorRules(),
+                repositories = repositories
+            )
+            controller.execute()
+        except ValidationError as e:
+            return Response(
+                {'message': ' '.join(e.messages)},
+                status = status.HTTP_400_BAD_REQUEST
+            )
+        except (PermissionDenied, ObjectDoesNotExist) as e:
+            return Response(
+                {'message': str(e)},
+                status = status.HTTP_403_FORBIDDEN
+            )
+        except Exception as e:
+            import traceback
+            print(traceback.print_exc())
+            return Response(
+                {'message': 'Error interno, por favor intenta más tarde.'},
+                status = status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+        return Response({'message': 'Estado del documento actualizado con éxito.'}, status = status.HTTP_200_OK)

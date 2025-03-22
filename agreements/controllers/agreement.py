@@ -6,23 +6,30 @@ from typing import (
 from django.utils import timezone
 
 from core.interfaces.controller import (
-    ControllerInterface
+    ControllerInterface,
+    ControllerMultiRepositoryInterface
 )
 from core.interfaces.repository import (
     RepositoryInterface
 )
 from ..models import (
     Agreement,
+    AgreementDocumentThrough
 )
 from ..validators.agreement import (
     AgreementDocumentationStatusValidator,
     AgreementDocumentRelationValidator,
     AgreementDocumentStatusValidator,
     AgreementActiveValidator,
-    UniqueStudentInAgreementValidator
+    UniqueStudentInAgreementValidator,
+    AgreementDocumentOneRelationValidator,
+    AgreementDifferentStatusValidator
 )
 from programs.models import (
     Student
+)
+from ..enums import (
+    AgreementDocumentStatusEnum
 )
 
 class AgreementUploadDocumentController(ControllerInterface):
@@ -221,3 +228,100 @@ class AgreementAssignStudentController(ControllerInterface):
         self.validator.add_rules(rules = self.validations)
         self.validator.validate(data = self.raw_data)
         self.assign_student()
+
+class UpdateAgreementDocumentStatusController(ControllerMultiRepositoryInterface):
+
+    validations = [
+        AgreementDocumentOneRelationValidator,
+        AgreementDifferentStatusValidator
+    ]
+
+    def get_agreement(self) -> Agreement:
+        """
+        Obtiene el convenio asociado al ID proporcionado en los datos de entrada.
+
+        Returns:
+            Agreement: Instancia del convenio.
+        
+        Raises:
+            ObjectDoesNotExist: Si el documento no existe en el repositorio.
+        """
+        return (
+            self
+            .repositories['agreement']
+            .get_by_id(
+                obj_id = self.raw_data['agreement_id']
+            )
+        )
+    
+    def get_document_agreement_through(self) -> AgreementDocumentThrough:
+        """
+        Obtiene la instancia de AgreementDocumentThrough basada en el ID del documento.
+
+        Returns:
+            AgreementDocumentThrough: Instancia del documento del convenio.
+
+        Raises:
+            ObjectDoesNotExist: Si el documento no existe en el repositorio.
+        """
+        return (
+            self
+            .repositories['agreement_document']
+            .get_by_id(
+                obj_id = self.raw_data['document_agreement_id']
+            )
+        )
+    
+    def preload_data(self):
+        """
+        Precarga los datos necesarios para la ejecución.
+
+        Obtiene y almacena en `self.raw_data` la información del convenio y 
+        del documento del convenio (modelo intermedio AgreementDocumentThrough).
+        """
+        self.raw_data['agreement'] = self.get_agreement()
+        self.raw_data['agreement_document'] = self.get_document_agreement_through()
+
+    def update_status_document(self):
+        """
+        Actualiza el estado del documento del convenio y guarda los cambios.
+        """
+
+        agrement_document: AgreementDocumentThrough = self.raw_data['agreement_document']
+        agrement_document.status = self.raw_data['status']
+        agrement_document.save()
+
+    def create_comment(self):
+        """
+        Crea un comentario asociado al cambio de estado del documento.
+
+        Registra el estado anterior, el nuevo estado, el comentario del usuario 
+        y la referencia al documento del convenio (modelo intermedio AgreementDocumentThrough).
+        """
+        data = {
+            'previous_state': self.raw_data['agreement_document'].status,
+            'new_state': self.raw_data['status'],
+            'comment': self.raw_data['comment'],
+            'created_by': self.raw_data['user'],
+            'agreement_document': self.raw_data['agreement_document']
+        }
+        self.repositories['comment'].create(**data)
+    
+    def execute(self):
+        """
+        Ejecuta el proceso de actualización del estado de un documento de convenio.
+
+        - Precarga los datos requeridos.
+        - Valida la información utilizando las reglas definidas.
+        - Si el nuevo estado es 'RECHAZADO', crea un comentario asociado.
+        - Actualiza el estado del documento del convenio.
+        """
+        self.preload_data()
+        
+        self.validator.add_rules(rules = self.validations)
+        self.validator.validate(data = self.raw_data)
+
+        if self.raw_data['status'] == AgreementDocumentStatusEnum.RECHAZADO.value:
+            self.create_comment()
+
+        self.update_status_document()
