@@ -72,6 +72,7 @@ class AgreementDetailModelSerializer(serializers.ModelSerializer):
         many = True, 
         read_only = True
     )
+    company = CompanyModelSerializer()
     
     class Meta:
         model = Agreement
