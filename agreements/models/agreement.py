@@ -241,7 +241,7 @@ class AgreementDocumentComment(TimeStampedBaseModel):
     )
     agreement_document = models.ForeignKey(
         AgreementDocumentThrough,
-        on_delete = models.PROTECT,
+        on_delete = models.CASCADE,
         verbose_name = 'Documento del convenio'
     )
 

@@ -35,7 +35,7 @@ class AgreementDocumentationStatusValidator(ValidatorInterface):
             ValidationError: Si la documentación ya está completa.
         """
         if data['agreement'].documentation_status.upper() == AgreementDocumentationStatusEnum.COMPLETA.value:
-            raise ValidationError('No se puede actualizar la documentación.')
+            raise ValidationError('No se puede actualizar la documentación cuando esta completa.')
 
 class AgreementDocumentRelationValidator(ValidatorInterface):
 
@@ -119,7 +119,8 @@ class UniqueStudentInAgreementValidator(ValidatorInterface):
         queryset = (
             repository
             .filter(
-                student = data['student']
+                student = data['student'],
+                status = 'ACTIVO'
             )
         )
         if queryset.exists():
@@ -143,7 +144,7 @@ class AgreementDocumentOneRelationValidator(ValidatorInterface):
         agreement: Agreement = data['agreement']
 
         if not agreement.agreementdocumentthrough_set.filter(
-            document_agreement__id = data['document_agreement_id']
+            pk = data['document_agreement_id']
         ).exists():
             raise PermissionDenied('No estas autorizado para la modificación de este documento.')
 

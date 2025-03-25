@@ -20,6 +20,9 @@ from ..models.choices import (
 from ..enums import (
     AgreementDocumentStatusEnum
 )
+from programs.serializers.program import (
+    ProgramModelSerializer
+)
 
 class AgreementDocumentModelSerializer(serializers.ModelSerializer):
     class Meta:
@@ -73,6 +76,7 @@ class AgreementDetailModelSerializer(serializers.ModelSerializer):
         read_only = True
     )
     company = CompanyModelSerializer()
+    program = ProgramModelSerializer()
     
     class Meta:
         model = Agreement

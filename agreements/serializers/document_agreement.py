@@ -10,6 +10,8 @@ from custom_auth.serializers.user import (
 )
 
 class AgreementDocumentCommentModelSerializer(serializers.ModelSerializer):
+
+    created_by = UserListModelSerializer()
     class Meta:
         model = AgreementDocumentComment
         exclude = ['agreement_document']
