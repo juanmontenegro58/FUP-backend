@@ -1,5 +1,8 @@
 from django.db import models
 
+from custom_auth.models import (
+    CustomUser
+)
 from core.models import (
     TimeStampedBaseModel
 )
@@ -136,3 +139,41 @@ class DefenseTeacherThrough(TimeStampedBaseModel):
 
     def __str__(self):
         return f'{self.teacher} - {self.defense}'
+    
+class DefenseComment(TimeStampedBaseModel):
+    """
+    Modelo que representa los comentarios realizados en una sustentación.
+    Hereda de la clase abstracta `TimeStampedBaseModel`.
+
+    Inherit:
+        TimeStampedBaseModel: Proporciona los atributos de marca de tiempo.
+            created_at (DateTimeField): Fecha y hora de la creación.
+            updated_at (DateTimeField): Fecha y hora de la última modificación.
+
+    Attributes:
+        comment (TextField): Contenido del comentario, con un máximo de 500 caracteres.
+        created_by (ForeignKey): Relación con el modelo `CustomUser`, indica quién creó el comentario.
+        defense (ForeignKey): Relación con el modelo `Defense`, representa la sustentación a la que pertenece el comentario.
+    """
+
+    comment = models.TextField(
+        max_length = 500,
+        verbose_name = 'Comentario'
+    )
+    created_by = models.ForeignKey(
+        CustomUser,
+        on_delete = models.PROTECT,
+        verbose_name = 'Creado por'
+    )
+    defense = models.ForeignKey(
+        Defense,
+        on_delete = models.CASCADE,
+        verbose_name = 'Sustentación'
+    )
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name_plural: str = 'Comentarios de sustentación'
+
+    def __str__(self):
+        return self.comment

@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view
@@ -7,7 +8,8 @@ from drf_spectacular.utils import (
 from ..serializers.defense import (
     DefenseModelSerializer,
     DefenseListModelSerializer,
-    DefenseDetailModelSerializer
+    DefenseDetailModelSerializer,
+    DefenseRescheduleSerializer
 )
 from ..models import (
     Defense
@@ -45,7 +47,8 @@ class DefenseViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         serializers = {
             'list': DefenseListModelSerializer,
-            'retrieve': DefenseDetailModelSerializer
+            'retrieve': DefenseDetailModelSerializer,
+            'reschedule': DefenseRescheduleSerializer
         }
         return (
             serializers
@@ -54,3 +57,14 @@ class DefenseViewSet(viewsets.ModelViewSet):
                 super().get_serializer_class()
             )
         )
+    
+    @extend_schema(
+        summary = 'Reprogramar sustentación',
+        description = 'Reprograma la sustentación.',
+        tags = ['Sustentación']
+    )
+    @action(detail = True, methods = ['post'], url_path = 'reschedule')
+    def reschedule(self, request, pk = None):
+        
+        serializer = self.get_serializer_class()
+        serializer.is_valid(raise_exception = True)

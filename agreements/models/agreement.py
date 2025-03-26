@@ -76,10 +76,6 @@ class Agreement(TimeStampedBaseModel):
         null = True,
         blank = True
     )
-    requirements = models.TextField(
-        verbose_name = 'Requisitos para aplicación',
-        max_length = 2000
-    )
     documentation_status = models.CharField(
         max_length = 100,
         verbose_name = 'Estado de documentación',
@@ -218,6 +214,22 @@ class AgreementDocumentThrough(TimeStampedBaseModel):
         return f'{self.agreement} - {self.document_agreement}'
     
 class AgreementDocumentComment(TimeStampedBaseModel):
+    """
+    Modelo que representa los comentarios y cambios de estado en un documento de convenio.
+    Hereda de la clase abstracta `TimeStampedBaseModel`.
+
+    Inherit:
+        TimeStampedBaseModel: Proporciona los atributos de marca de tiempo.
+            created_at (DateTimeField): Fecha y hora de la creación.
+            updated_at (DateTimeField): Fecha y hora de la última modificación.
+
+    Attributes:
+        previous_state (CharField): Estado anterior del documento, opcional.
+        new_state (CharField): Nuevo estado del documento, obligatorio.
+        comment (TextField): Comentario asociado al cambio de estado, con un máximo de 500 caracteres.
+        created_by (ForeignKey): Relación con el modelo `CustomUser`, indica quién realizó el comentario o cambio.
+        agreement_document (ForeignKey): Relación con el modelo `AgreementDocumentThrough`, representa el documento del convenio afectado.
+    """
 
     previous_state = models.CharField(
         max_length = 100,

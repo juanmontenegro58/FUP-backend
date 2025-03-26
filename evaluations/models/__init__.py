@@ -4,5 +4,6 @@ from .teacher import (
 from .defense import (
     Defense,
     DefenseStudentThrough,
-    DefenseTeacherThrough
+    DefenseTeacherThrough,
+    DefenseComment
 )

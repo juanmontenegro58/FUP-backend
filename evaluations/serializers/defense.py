@@ -4,7 +4,8 @@ from rest_framework import serializers
 from ..models import (
     Defense,
     DefenseStudentThrough,
-    DefenseTeacherThrough
+    DefenseTeacherThrough,
+    DefenseComment
 )
 from programs.models import (
     Student
@@ -125,3 +126,12 @@ class DefenseDetailModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Defense
         fields = '__all__'
+
+class DefenseCommentModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DefenseComment
+        exclude = ['defense']
+
+class DefenseRescheduleSerializer(serializers.Serializer):
+
+    comment = serializers.CharField()
