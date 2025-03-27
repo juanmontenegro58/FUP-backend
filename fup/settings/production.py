@@ -30,8 +30,8 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'fup',
         'USER': 'fup_admin',
-        'PASSWORD': 'fup-database.c0l2au4w2p33.us-east-1.rds.amazonaws.com',
-        'HOST': 'db',
+        'PASSWORD': 'Inkcmh29lh0METFfaFB',
+        'HOST': 'fup-database.c0l2au4w2p33.us-east-1.rds.amazonaws.com',
         'PORT': 3306
     }
 }
