@@ -15,6 +15,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8080",
+    "https://fup-env.eba-ijpp3mdu.us-east-1.elasticbeanstalk.com",
 ]
 
 ALLOWED_HOSTS = [
