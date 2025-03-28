@@ -20,7 +20,9 @@ from .choices import (
     AGREEMENT_CHOICES,
     AGREEMENT_DOCUMENT_CHOICES,
     AGREEMENT_DOCUMENTATION_STATUS,
-    AGREEMENT_STUDENT_STATUS
+    AGREEMENT_STUDENT_STATUS,
+    AGREEMENT_SCOPE,
+    AGREEMENT_TYPES
 )
 
 def custom_upload_document(instance, filename):
@@ -52,6 +54,12 @@ class Agreement(TimeStampedBaseModel):
         program (ForeignKey): Relación con el modelo `Program`.
         studens (ManyToManyField): Relación de muchos a muchos con el modelo `Student`.
         documents (ManyToManyField): Relación de muchos a muchos con el modelo `DocumentAgreement`.
+        agreement_type (CharField): Tipo de convenio. Puede ser:
+            - 'ESPECÍFICO' (Específico): Convenios exclusivos para prácticas.
+            - 'MACRO' (Macro): Convenios con recursos financieros, becas, estadías, etc.
+        scope (CharField): Alcance del convenio. Puede ser:
+            - 'NACIONAL' (Nacional): Convenios dentro del país.
+            - 'INTERNACIONAL' (Internacional): Convenios con alcance fuera del país.
     """
 
     name = models.CharField(
@@ -101,6 +109,18 @@ class Agreement(TimeStampedBaseModel):
         DocumentAgreement,
         through = 'AgreementDocumentThrough',
         verbose_name = 'Documentos'
+    )
+    agreement_type = models.CharField(
+        max_length = 100,
+        verbose_name = 'Tipo de convenio',
+        choices = AGREEMENT_TYPES,
+        default = 'ESPECÍFICO'
+    )
+    scope = models.CharField(
+        max_length = 100,
+        verbose_name = 'Alcance',
+        choices = AGREEMENT_SCOPE,
+        default = 'NACIONAL'
     )
 
     class Meta:

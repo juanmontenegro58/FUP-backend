@@ -1,3 +1,6 @@
+from datetime import (
+    timedelta
+)
 from django.core.exceptions import (
     ValidationError,
     PermissionDenied
@@ -152,18 +155,46 @@ class AgreementDifferentStatusValidator(ValidatorInterface):
 
     @staticmethod
     def validate(data):
-        """Impide que un documento mantenga el mismo estado cuando se intenta actualizar.
+        """
+        Impide que un documento mantenga el mismo estado cuando se intenta actualizar 
+        y valida que tenga un archivo cargado al cambiar de estado.
 
         Args:
             data (dict): Datos necesarios para la validación.
-                - document_agreement (AgreementDocumentThrough): Documento del acuerdo a modificar.
+                - agreement_document (AgreementDocumentThrough): Documento del acuerdo a modificar.
                 - status (str): Nuevo estado que se desea asignar.
 
         Raises:
             ValidationError: Si el nuevo estado es igual al estado actual del documento.
+            ValidationError: Si no hay un archivo cargado al intentar cambiar el estado.
         """
         
         document_agreement: AgreementDocumentThrough = data['agreement_document']
 
         if document_agreement.status == data['status']:
             raise ValidationError('El nuevo estado no puede ser el mismo que el actual.')
+        
+        if not document_agreement.file:
+            raise ValidationError('El documento debe tener un archivo cargado para cambiar de estado.')
+
+class AgreementMinSixMonthsValidator(ValidatorInterface):
+
+    @staticmethod
+    def validate(data):
+        """
+        Valida que la diferencia entre dos fechas sea de al menos 6 meses.
+
+        Args:
+            data (dict): Datos necesarios para la validación.
+                - start_date (date): Fecha de inicio del acuerdo.
+                - end_date (date): Fecha de finalización del acuerdo.
+
+        Raises:
+            ValidationError: Si la diferencia entre las fechas es menor a 6 meses.
+        """
+        
+        start_date = data['initial_date']
+        end_date = data['end_date']
+
+        if (end_date - start_date) < timedelta(days=6 * 30):
+            raise ValidationError('El acuerdo debe tener una duración mínima de 6 meses.')

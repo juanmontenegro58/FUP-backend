@@ -1,4 +1,7 @@
 from rest_framework import serializers
+from django.core.exceptions import (
+    ValidationError
+)
 
 from ..models import (
     Agreement,
@@ -22,6 +25,12 @@ from ..enums import (
 )
 from programs.serializers.program import (
     ProgramModelSerializer
+)
+from core.validators.validator import (
+    ValidatorRules
+)
+from ..validators.agreement import (
+    AgreementMinSixMonthsValidator
 )
 
 class AgreementDocumentModelSerializer(serializers.ModelSerializer):
@@ -51,6 +60,14 @@ class AgreementCreateModelSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'end_date': 'La fecha de finalización debe ser posterior a la fecha inicial'
             })
+        validator = ValidatorRules()
+        validator.add_rules(rules = [AgreementMinSixMonthsValidator])
+        try:
+            validator.validate(attrs)
+        except ValidationError as e:
+            raise serializers.ValidationError({
+                'end_date': e.message
+            })
         return attrs
 
     def validate_documents(self, value):
@@ -60,6 +77,7 @@ class AgreementCreateModelSerializer(serializers.ModelSerializer):
                 'Debe incluir al menos un documento en el convenio'
             )
         return value
+    
 
     def create(self, validated_data):
         documents = validated_data.pop('documents')
