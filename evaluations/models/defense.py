@@ -170,9 +170,19 @@ class DefenseComment(TimeStampedBaseModel):
         on_delete = models.CASCADE,
         verbose_name = 'Sustentación'
     )
+    previous_date = models.DateField(
+        verbose_name="Fecha anterior",
+        blank=True,
+        null=True
+    )
+    new_date = models.DateField(
+        verbose_name="Nueva fecha",
+        blank=True,
+        null=True
+    )
 
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']
         verbose_name_plural: str = 'Comentarios de sustentación'
 
     def __str__(self):

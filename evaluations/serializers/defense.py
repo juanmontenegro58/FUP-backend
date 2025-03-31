@@ -17,6 +17,9 @@ from .teacher import (
     TeacherDefenseSerializer,
     TeacherModelSerializer
 )
+from custom_auth.serializers.user import (
+    UserListModelSerializer
+)
 
 class DefenseStudentThroughModelSerializer(serializers.ModelSerializer):
 
@@ -128,6 +131,8 @@ class DefenseDetailModelSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class DefenseCommentModelSerializer(serializers.ModelSerializer):
+
+    created_by = UserListModelSerializer()
     class Meta:
         model = DefenseComment
         exclude = ['defense']
@@ -135,3 +140,4 @@ class DefenseCommentModelSerializer(serializers.ModelSerializer):
 class DefenseRescheduleSerializer(serializers.Serializer):
 
     comment = serializers.CharField()
+    new_scheduled_date = serializers.DateField()

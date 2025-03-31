@@ -278,7 +278,7 @@ class AgreementDocumentComment(TimeStampedBaseModel):
     )
 
     class Meta:
-        ordering = ['created_at']
+        ordering = ['-created_at']
         verbose_name_plural: str = 'Comentarios de documento de convenio'
 
     def __str__(self):
