@@ -60,7 +60,8 @@ class Practice(TimeStampedBaseModel):
         PracticalOffer,
         on_delete = models.PROTECT,
         verbose_name = 'Oferta práctica',
-        null = True
+        null = True,
+        blank = True
     )
 
     class Meta:
