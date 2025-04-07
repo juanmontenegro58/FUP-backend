@@ -14,7 +14,9 @@ from drf_spectacular.utils import (
 )
 
 from ..serializers.practice import (
-    PracticeModelSerializer
+    PracticeModelSerializer,
+    PracticeListModelSerializer,
+    PracticeDetailModelSerializer
 )
 from ..models import (
     Practice
@@ -52,16 +54,15 @@ class PracticeViewSet(viewsets.ModelViewSet):
     serializer_class = PracticeModelSerializer
     http_method_names = ['get', 'post', 'put']
 
-    # def get_serializer_class(self):
-    #     serializers = {
-    #         'list': DefenseListModelSerializer,
-    #         'retrieve': DefenseDetailModelSerializer,
-    #         'comments': DefenseCommentModelSerializer,
-    #     }
-    #     return (
-    #         serializers
-    #         .get(
-    #             self.action,
-    #             super().get_serializer_class()
-    #         )
-    #     )
+    def get_serializer_class(self):
+        serializers = {
+            'list': PracticeListModelSerializer,
+            'retrieve': PracticeDetailModelSerializer,
+        }
+        return (
+            serializers
+            .get(
+                self.action,
+                super().get_serializer_class()
+            )
+        )

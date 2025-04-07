@@ -64,6 +64,7 @@ class Practice(TimeStampedBaseModel):
     )
 
     class Meta:
+        ordering = ['-created_at']
         verbose_name_plural: str = 'Practicas'
 
     def __str__(self):
