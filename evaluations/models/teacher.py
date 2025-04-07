@@ -60,7 +60,8 @@ class Teacher(TimeStampedBaseModel):
         CustomUser,
         on_delete = models.SET_NULL,
         verbose_name = 'Usuario',
-        null = True
+        null = True,
+        blank = True
     )
 
     class Meta:
