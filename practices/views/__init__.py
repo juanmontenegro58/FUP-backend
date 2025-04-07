@@ -1,0 +1,3 @@
+from .practice import (
+    PracticeViewSet
+)

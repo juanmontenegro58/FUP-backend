@@ -126,7 +126,7 @@ class DefenseViewSet(viewsets.ModelViewSet):
     @extend_schema(
         summary = 'Comentarios de sustentación',
         description = 'Lista los comentarios de una sustentación',
-        tags = ['sustentación']
+        tags = ['Sustentación']
     )
     @action(detail = True, methods = ['get'], url_path = 'comments')
     def comments(self, request, pk = None):

@@ -59,7 +59,8 @@ class Practice(TimeStampedBaseModel):
     practical_offer = models.ForeignKey(
         PracticalOffer,
         on_delete = models.PROTECT,
-        verbose_name = 'Oferta práctica' 
+        verbose_name = 'Oferta práctica',
+        null = True
     )
 
     class Meta:

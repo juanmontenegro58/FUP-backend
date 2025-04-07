@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from .models import (
-    Program
+    Program,
+    Student
 )
 
 # Register your models here.
@@ -9,3 +10,5 @@ from .models import (
 @admin.register(Program)
 class ProgramAdmin(admin.ModelAdmin):
     ...
+
+admin.site.register(Student)

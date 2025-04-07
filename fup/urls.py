@@ -43,6 +43,9 @@ from evaluations.views import (
     TeacherViewSet,
     DefenseViewSet
 )
+from practices.views import (
+    PracticeViewSet
+)
 
 router = SimpleRouter(trailing_slash = False)
 router.register(r'companies', CompanyViewSet, basename = 'company')
@@ -53,6 +56,7 @@ router.register(r'programs', ProgramViewSet, basename = 'program')
 router.register(r'students', StudentViewSet, basename = 'student')
 router.register(r'teachers', TeacherViewSet, basename = 'teacher')
 router.register(r'defenses', DefenseViewSet, basename = 'defense')
+router.register(r'practices', PracticeViewSet, basename = 'practice')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
