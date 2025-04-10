@@ -6,14 +6,21 @@ from core.models import (
 from .choices import (
     PRACTICE_STATUS_CHOICES
 )
+from agreements.models import (
+    Agreement
+)
 from programs.models import (
-    Student
+    Student,
+    Program
 )
 from evaluations.models import (
     Teacher
 )
 from .practical_offer import (
     PracticalOffer
+)
+from custom_auth.models import (
+    CustomUser
 )
 
 class Practice(TimeStampedBaseModel):
@@ -63,6 +70,16 @@ class Practice(TimeStampedBaseModel):
         null = True,
         blank = True
     )
+    program = models.ForeignKey(
+        Program,
+        on_delete = models.PROTECT,
+        verbose_name = 'Programa'
+    )
+    agreement = models.ForeignKey(
+        Agreement,
+        on_delete = models.PROTECT,
+        null = True
+    )
 
     class Meta:
         ordering = ['-created_at']
@@ -94,8 +111,14 @@ class InternshipTracking(TimeStampedBaseModel):
         on_delete = models.CASCADE,
         verbose_name = 'Práctica'
     )
+    created_by = models.ForeignKey(
+        CustomUser,
+        on_delete = models.PROTECT,
+        verbose_name = 'creado por'
+    )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Seguimiento de práctica'
 
     def __str__(self):
@@ -128,8 +151,14 @@ class DocumentPractice(TimeStampedBaseModel):
         on_delete = models.PROTECT,
         verbose_name = 'Práctica'
     )
+    uploaded_by = models.ForeignKey(
+        CustomUser,
+        on_delete = models.PROTECT,
+        verbose_name = 'Subido por'
+    )
 
     class Meta:
+        ordering = ['created_at']
         verbose_name_plural: str = 'Documentos de práctica'
 
     def __str__(self):

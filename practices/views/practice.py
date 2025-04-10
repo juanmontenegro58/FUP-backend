@@ -13,16 +13,26 @@ from drf_spectacular.utils import (
     extend_schema_view
 )
 
+from practices.serializers.internship_tracking import (
+    InternshipTrackingModelSerializer
+)
 from ..serializers.practice import (
     PracticeModelSerializer,
     PracticeListModelSerializer,
-    PracticeDetailModelSerializer
+    PracticeDetailModelSerializer,
+    PracticeDocumentCreateSerializer
 )
 from ..models import (
     Practice
 )
 from core.validators.validator import (
     ValidatorRules
+)
+from ..repositories.internship_tracking import (
+    InternshipTrackingRepository
+)
+from ..repositories.practice import (
+    DocumentPracticeRepository
 )
 
 @extend_schema_view(
@@ -58,6 +68,8 @@ class PracticeViewSet(viewsets.ModelViewSet):
         serializers = {
             'list': PracticeListModelSerializer,
             'retrieve': PracticeDetailModelSerializer,
+            'internship_trackings': InternshipTrackingModelSerializer,
+            'upload_documents': PracticeDocumentCreateSerializer
         }
         return (
             serializers
@@ -65,4 +77,71 @@ class PracticeViewSet(viewsets.ModelViewSet):
                 self.action,
                 super().get_serializer_class()
             )
+        )
+    
+    @extend_schema(
+        methods = ['get'],
+        summary = 'Listar seguimientos de una práctica',
+        description = 'Obtiene la lista de seguimientos asociados a una práctica específica.',
+        responses = {200: InternshipTrackingModelSerializer(many = True)},
+        tags = ['Práctica']
+    )
+    @extend_schema(
+        methods = ['post'],
+        summary = "Crear un nuevo registro de seguimiento a una práctica",
+        description = "Registra un nuevo registro de seguimiento a una práctica en el sistema.",
+        responses = {201: InternshipTrackingModelSerializer},
+        tags = ['Práctica']
+    )
+    @action(detail = True, methods = ['get', 'post'], url_path = 'internship-trackings')
+    def internship_trackings(self, request, pk = None):
+        if request.method == 'GET':
+            return self.handle_get_internship_trackings(request, pk)
+        elif request.method == 'POST':
+            serializer = self.get_serializer(data = request.data)
+            serializer.is_valid(raise_exception = True)
+
+            serializer.save(
+                practice_id = pk,
+                created_by = request.user
+            )
+            return Response(serializer.data, status = status.HTTP_201_CREATED)
+
+    def handle_get_internship_trackings(self, request, pk = None):
+        repository = InternshipTrackingRepository()
+        queryset = repository.filter(practice_id = pk)
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many = True)
+            return self.get_paginated_response(serializer.data)
+        
+        serializer = self.get_serializer(queryset, many = True)
+        return Response(serializer.data, status = status.HTTP_200_OK)
+
+    @extend_schema(
+        summary = 'Carga documentos a una práctica',
+        description = 'Carga multiples documentos a una práctica específica.',
+        responses = {200: InternshipTrackingModelSerializer(many = True)},
+        tags = ['Práctica']
+    )
+    @action(detail = True, methods = ['post'], url_path = 'documents/upload')
+    def upload_documents(self, request, pk = None):
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+
+        repository = DocumentPracticeRepository()
+        data = serializer.validated_data
+
+        for name, file in zip(data['names'], data['files']):
+            data = {
+                'name': name,
+                'file': file,
+                'uploaded_by': request.user,
+                'practice_id': pk
+            }
+            repository.create(**data)
+        return Response(
+            {'message': 'Archivos subidos correctamente'},
+            status = status.HTTP_200_OK
         )
