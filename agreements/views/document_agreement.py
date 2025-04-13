@@ -1,4 +1,5 @@
 from rest_framework import viewsets
+from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view
@@ -10,6 +11,9 @@ from ..serializers.document_agreement import (
 from ..models import (
     DocumentAgreement
 )
+
+class CustomPageDocuments(PageNumberPagination):
+    page_size = 30
 
 @extend_schema_view(
     list=extend_schema(
@@ -39,3 +43,4 @@ class DocumentAgreementViewSet(viewsets.ModelViewSet):
     queryset = DocumentAgreement.objects.all()
     serializer_class = DocumentAgreementModelSerializer
     http_method_names = ['get', 'post', 'put']
+    pagination_class = CustomPageDocuments
