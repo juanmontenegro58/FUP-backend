@@ -6,13 +6,15 @@ from django.core.exceptions import (
 from django.db import transaction
 from rest_framework import (
     viewsets,
-    status
+    status,
+    filters
 )
 from rest_framework.views import (
     APIView
 )
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view
@@ -76,6 +78,8 @@ class AgreementViewSet(viewsets.ModelViewSet):
     queryset = Agreement.objects.all()
     serializer_class = AgreementCreateModelSerializer
     http_method_names = ['get', 'post', 'put']
+    filter_backends = [filters.SearchFilter, DjangoFilterBackend]
+    search_fields = ['company__name', 'name', 'company__nui']
 
     def get_serializer_class(self):
         serializers = {
