@@ -80,6 +80,12 @@ class AgreementViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'put']
     filter_backends = [filters.SearchFilter, DjangoFilterBackend]
     search_fields = ['company__name', 'name', 'company__nui']
+    filterset_fields = [
+        'status', 
+        'agreement_type',
+        'documentation_status',
+        'scope'
+    ]
 
     def get_serializer_class(self):
         serializers = {
