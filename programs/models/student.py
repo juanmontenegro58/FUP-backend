@@ -31,6 +31,12 @@ class Student(TimeStampedBaseModel):
         program (ForeignKey): Relación con el modelo `Program`
     """
 
+    full_name = models.CharField(
+        max_length = 300,
+        verbose_name = 'Nombre completo',
+        db_index = True,
+        editable = False 
+    )
     first_name = models.CharField(
         max_length = 100,
         verbose_name = 'Primer nombre'
@@ -81,7 +87,14 @@ class Student(TimeStampedBaseModel):
 
     class Meta:
         ordering = ['created_at']
+        verbose_name: str = 'Estudiante'
         verbose_name_plural: str = 'Estudiantes'
+
+    def save(self, *args, **kwargs):
+        names = ' '.join(name for name in [self.first_name, self.second_name] if name)
+        last_name = ' '.join(name for name in [self.first_surname, self.second_surname] if name)
+        self.full_name = f'{names} {last_name}'
+        return super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.first_name} {self.first_surname}'

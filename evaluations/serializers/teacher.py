@@ -8,6 +8,11 @@ from ..models.choices import (
 )
 
 class TeacherModelSerializer(serializers.ModelSerializer):
+
+    full_name = serializers.CharField(
+        read_only = True
+    )
+    
     class Meta:
         model = Teacher
         exclude = ['user']

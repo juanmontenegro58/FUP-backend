@@ -5,6 +5,16 @@ from ..models import (
 )
 
 class StudentModelSerializer(serializers.ModelSerializer):
+
+    full_name = serializers.CharField(read_only = True)
+    class Meta:
+        model = Student
+        exclude = ['user']
+
+class StudentListModelSerializer(serializers.ModelSerializer):
+
+    program = serializers.StringRelatedField()
+
     class Meta:
         model = Student
         exclude = ['user']
