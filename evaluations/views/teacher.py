@@ -1,4 +1,6 @@
-from rest_framework import viewsets
+from rest_framework import (
+    viewsets,
+)
 from drf_spectacular.utils import (
     extend_schema,
     extend_schema_view
@@ -39,3 +41,4 @@ class TeacherViewSet(viewsets.ModelViewSet):
     queryset = Teacher.objects.all()
     serializer_class = TeacherModelSerializer
     http_method_names = ['get', 'post', 'put']
+    search_fields = ['full_name', 'document_number']
