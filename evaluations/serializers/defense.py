@@ -1,5 +1,6 @@
 from django.db import transaction
 from rest_framework import serializers
+from drf_spectacular.utils import extend_schema_field
 
 from ..models import (
     Defense,
@@ -111,9 +112,19 @@ class DefenseModelSerializer(serializers.ModelSerializer):
         return instance
     
 class DefenseListModelSerializer(serializers.ModelSerializer):
+
+    students = serializers.SerializerMethodField(method_name = 'get_students')
     class Meta:
         model = Defense
-        exclude = ['students', 'teachers']
+        exclude = ['teachers']
+    @extend_schema_field(
+            serializers.ListField(
+                child = serializers.CharField(),
+                help_text = 'Lista de nombres de los estudiantes asociados'
+            )
+    )
+    def get_students(self, obj):
+        return [student.full_name for student in obj.students.all()]
 
 class DefenseDetailModelSerializer(serializers.ModelSerializer):
 

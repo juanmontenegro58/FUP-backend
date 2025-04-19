@@ -59,9 +59,10 @@ from core.validators.validator import (
 )
 class DefenseViewSet(viewsets.ModelViewSet):
 
-    queryset = Defense.objects.all()
+    queryset = Defense.objects.prefetch_related('students')
     serializer_class = DefenseModelSerializer
     http_method_names = ['get', 'post', 'put']
+    search_fields = ['students__full_name']
 
     def get_serializer_class(self):
         serializers = {
