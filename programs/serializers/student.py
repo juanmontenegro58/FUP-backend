@@ -7,6 +7,7 @@ from ..models import (
 class StudentModelSerializer(serializers.ModelSerializer):
 
     full_name = serializers.CharField(read_only = True)
+    program = serializers.StringRelatedField()
     class Meta:
         model = Student
         exclude = ['user']

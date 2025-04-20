@@ -38,6 +38,7 @@ class RescheduleDefenseController(ControllerMultiRepositoryInterface):
 
         defense: Defense = self.raw_data['defense']
         defense.status = DefenseStatusEnum.REPROGRAMADA.value
+        defense.scheduled_date = self.raw_data['new_scheduled_date']
         defense.save()
     
     def create_comment(self):
@@ -81,5 +82,5 @@ class RescheduleDefenseController(ControllerMultiRepositoryInterface):
         self.preload_data()
         self.validator.add_rules(rules = self.validations)
         self.validator.validate(data = self.raw_data)
-        self.update_status()
         self.create_comment()
+        self.update_status()

@@ -18,9 +18,6 @@ from .teacher import (
     TeacherDefenseSerializer,
     TeacherModelSerializer
 )
-from custom_auth.serializers.user import (
-    UserListModelSerializer
-)
 
 class DefenseStudentThroughModelSerializer(serializers.ModelSerializer):
 
@@ -88,6 +85,8 @@ class DefenseModelSerializer(serializers.ModelSerializer):
     
     @transaction.atomic
     def update(self, instance, validated_data):
+        validated_data.pop('application_date')
+        validated_data.pop('scheduled_date')
         students = validated_data.pop('students')
         teachers = validated_data.pop('defenseteacherthrough_set')
 
@@ -143,7 +142,7 @@ class DefenseDetailModelSerializer(serializers.ModelSerializer):
 
 class DefenseCommentModelSerializer(serializers.ModelSerializer):
 
-    created_by = UserListModelSerializer()
+    created_by = serializers.StringRelatedField()
     class Meta:
         model = DefenseComment
         exclude = ['defense']

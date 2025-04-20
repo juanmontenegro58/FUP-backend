@@ -62,13 +62,18 @@ class DefenseViewSet(viewsets.ModelViewSet):
     queryset = Defense.objects.prefetch_related('students')
     serializer_class = DefenseModelSerializer
     http_method_names = ['get', 'post', 'put']
-    search_fields = ['students__full_name']
+    search_fields = [
+        'students__full_name',
+        'students__document_number',
+        'students__code',
+    ]
 
     def get_serializer_class(self):
         serializers = {
             'list': DefenseListModelSerializer,
             'retrieve': DefenseDetailModelSerializer,
             'comments': DefenseCommentModelSerializer,
+            'reschedule': DefenseRescheduleSerializer
         }
         return (
             serializers
