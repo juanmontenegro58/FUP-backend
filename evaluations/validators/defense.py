@@ -52,5 +52,5 @@ class DefenseNewDateValidator(ValidatorInterface):
         except ValueError:
             raise ValidationError("El formato de la fecha no es válido. Debe ser 'YYYY-MM-DD'.")
         
-        if current_date == new_date:
-            raise ValidationError('La nueva fecha de reprogramación debe ser diferente a la actual.')
+        if new_date <= current_date:
+            raise ValidationError('La nueva fecha debe ser posterior a la fecha progamada actual.')

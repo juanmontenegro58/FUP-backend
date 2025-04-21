@@ -138,3 +138,11 @@ class AgreementDocumentChangeStateSerializer(serializers.Serializer):
             raise serializers.ValidationError({'comment': 'Debes proporcionar un comentario.'})
 
         return attrs
+    
+class AgreementNestedSerializer(serializers.ModelSerializer):
+
+    company = CompanyModelSerializer()
+
+    class Meta:
+        model = Agreement
+        exclude = ['documents', 'program', 'students']

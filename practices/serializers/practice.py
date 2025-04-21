@@ -11,6 +11,9 @@ from programs.serializers.student import (
 from evaluations.serializers.teacher import (
     TeacherModelSerializer
 )
+from agreements.serializers.agreement import (
+    AgreementNestedSerializer
+)
 
 class DocumentPracticeModelSerializer(serializers.ModelSerializer):
 
@@ -52,6 +55,7 @@ class PracticeDetailModelSerializer(serializers.ModelSerializer):
         source = 'documentpractice_set'
     )
     program = serializers.StringRelatedField()
+    agreement = AgreementNestedSerializer()
 
     class Meta:
         model = Practice

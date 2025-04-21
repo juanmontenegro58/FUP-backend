@@ -151,3 +151,6 @@ class DefenseRescheduleSerializer(serializers.Serializer):
 
     comment = serializers.CharField()
     new_scheduled_date = serializers.DateField()
+
+class DefenseCommentSerializer(serializers.Serializer):
+    comment = serializers.CharField()

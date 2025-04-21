@@ -18,7 +18,8 @@ from ..serializers.defense import (
     DefenseListModelSerializer,
     DefenseDetailModelSerializer,
     DefenseRescheduleSerializer,
-    DefenseCommentModelSerializer
+    DefenseCommentModelSerializer,
+    DefenseCommentSerializer
 )
 from ..models import (
     Defense
@@ -130,12 +131,29 @@ class DefenseViewSet(viewsets.ModelViewSet):
         return Response({'message': 'Reprogramación completada'}, status = status.HTTP_200_OK)
     
     @extend_schema(
+        methods = ['get'],
         summary = 'Comentarios de sustentación',
         description = 'Lista los comentarios de una sustentación',
         tags = ['Sustentación']
     )
-    @action(detail = True, methods = ['get'], url_path = 'comments')
+    @extend_schema(
+        methods = ['post'],
+        summary = 'Comentarios de sustentación',
+        description = 'Crea un comentario a una sustentación',
+        tags = ['Sustentación'],
+        request = DefenseCommentSerializer,
+        responses = {
+            201: DefenseCommentModelSerializer
+        }
+    )
+    @action(detail = True, methods = ['get', 'post'], url_path = 'comments')
     def comments(self, request, pk = None):
+        if request.method == 'GET':
+            return self.handle_get_comments(request, pk)
+        if request.method == 'POST':
+            return self.handle_post_comments(request, pk)
+    
+    def handle_get_comments(self, request, pk = None):
         repository = DefenseCommentRepository()
         queryset = repository.filter(defense__id = pk)
 
@@ -146,3 +164,21 @@ class DefenseViewSet(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(queryset, many = True)
         return Response(serializer.data, status = status.HTTP_200_OK)
+
+    def handle_post_comments(self, request, pk = None):
+        repository_defense = DefenseRepository()
+        repository_defense_comment = DefenseCommentRepository()
+
+        serializer = DefenseCommentSerializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+        
+
+        data = {
+            'created_by': request.user,
+            'defense': repository_defense.get_by_id(obj_id = pk),
+            **serializer.data
+        }
+
+        comment = repository_defense_comment.create(**data)
+
+        return Response(DefenseCommentModelSerializer(comment).data, status = status.HTTP_201_CREATED)
