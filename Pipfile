@@ -10,6 +10,7 @@ django-filter = "*"
 djangorestframework-simplejwt = "*"
 django-cors-headers = "*"
 drf-spectacular = "*"
+djoser = "*"
 
 [dev-packages]
 

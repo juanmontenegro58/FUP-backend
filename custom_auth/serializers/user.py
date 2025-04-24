@@ -36,3 +36,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         data['full_name'] = self.user.get_full_name()
         
         return data
+
+class ValidatePasswordSerializer(serializers.Serializer):
+    password = serializers.CharField()
+
+
+class ValidatePasswordResponseSerializer(serializers.Serializer):
+    common = serializers.BooleanField()
+    similarity = serializers.BooleanField()

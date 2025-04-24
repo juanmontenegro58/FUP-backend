@@ -44,3 +44,8 @@ DATABASES = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'].append('rest_framework.authentication.SessionAuthentication')
+
+DJOSER.update({
+    'EMAIL_FRONTEND_DOMAIN': 'localhost:8080',
+    'EMAIL_FRONTEND_PROTOCOL': 'http'
+})
