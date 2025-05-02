@@ -10,7 +10,9 @@ from djoser.views import UserViewSet
 
 from .views import (
     CustomTokenObtainPairView,
-    PasswordValidationView
+    PasswordValidationView,
+    ValidateInfoUserView,
+    RegisterView
 )
 
 urlpatterns = [
@@ -18,6 +20,8 @@ urlpatterns = [
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('users/validate-password', PasswordValidationView.as_view()),
+    path('users/validate-document-number', ValidateInfoUserView.as_view()),
+    path('users/register', RegisterView.as_view()),
     
     re_path(r'^users/reset_password/?$', UserViewSet.as_view({'post': 'reset_password'}), name='password-reset'),
     re_path(r'^users/reset_password_confirm/?$', UserViewSet.as_view({'post': 'reset_password_confirm'}), name='password-reset-confirm'),

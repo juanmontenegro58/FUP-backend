@@ -179,7 +179,7 @@ SPECTACULAR_SETTINGS = {
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024  # 10 MB
 
 DJOSER = {
-    'PASSWORD_RESET_CONFIRM_URL': 'usuarios/contrasena/reestablecer/confirmar/{uid}/{token}',
+    'PASSWORD_RESET_CONFIRM_URL': 'usuarios/contrasena/restablecer/confirmar/{uid}/{token}',
     'SEND_ACTIVATION_EMAIL': False,
     'SEND_CONFIRMATION_EMAIL': False,
     'SET_PASSWORD_RETYPE': False,

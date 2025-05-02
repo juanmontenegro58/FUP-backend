@@ -20,10 +20,14 @@ class PracticalOffer(TimeStampedBaseModel):
             updated_at (DateTimeField): Fecha y hora de modificación.
 
     Attributes:
-        title (CharField): Titulo de la oferta.
+        title (CharField): Título de la oferta.
         description (TextField): Descripción de la oferta.
         agreement (ForeignKey): Relación con el modelo de `Agreement`.
-        students (ManyToManyField): Relación de muchos a muchos con el modelo `Student`
+        students (ManyToManyField): Relación muchos a muchos con el modelo `Student`.
+        vacancies (PositiveIntegerField): Número de vacantes disponibles.
+        close_date (DateField): Fecha de cierre de la oferta.
+        skills (TextField): Habilidades requeridas.
+        responsibilities (TextField): Responsabilidades del practicante.
     """
 
     title = models.CharField(
@@ -44,9 +48,23 @@ class PracticalOffer(TimeStampedBaseModel):
         through = 'PracticalOfferStudentThrough',
         blank = True
     )
+    skills = models.TextField(
+        verbose_name='Habilidades'
+    )
+    responsibilities = models.TextField(
+        verbose_name='Responsabilidades'
+    )
+    close_date = models.DateField(
+        verbose_name='Fecha de cierre'
+    )
+    vacancies = models.PositiveIntegerField(
+        default=1, 
+        verbose_name='Vacantes'
+    )
 
     class Meta:
-        verbose_name_plural: str = 'Ofertas prácticas'
+        verbose_name: str = 'Oferta práctica'
+        verbose_name_plural: str = 'Ofertas practicas'
 
     def __str__(self):
         return self.title

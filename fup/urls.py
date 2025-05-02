@@ -44,7 +44,8 @@ from evaluations.views import (
     DefenseViewSet
 )
 from practices.views import (
-    PracticeViewSet
+    PracticeViewSet,
+    PracticalOfferViewSet
 )
 
 router = SimpleRouter(trailing_slash = False)
@@ -57,6 +58,7 @@ router.register(r'students', StudentViewSet, basename = 'student')
 router.register(r'teachers', TeacherViewSet, basename = 'teacher')
 router.register(r'defenses', DefenseViewSet, basename = 'defense')
 router.register(r'practices', PracticeViewSet, basename = 'practice')
+router.register(r'practical-offers', PracticalOfferViewSet, basename = 'practical-offer')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

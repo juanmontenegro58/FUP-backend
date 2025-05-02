@@ -44,3 +44,9 @@ class ValidatePasswordSerializer(serializers.Serializer):
 class ValidatePasswordResponseSerializer(serializers.Serializer):
     common = serializers.BooleanField()
     similarity = serializers.BooleanField()
+
+class ValidateDocumentNumberSerializer(serializers.Serializer):
+    document_number = serializers.CharField()
+
+class RegisterSerializer(ValidateDocumentNumberSerializer):
+    password = serializers.CharField()
