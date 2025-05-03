@@ -5,7 +5,6 @@ from typing import (
     List,
     Dict, 
     Any,
-    Union
 )
 from django.db.models import (
     Model,
@@ -37,7 +36,7 @@ class RepositoryInterface(Generic[T]):
 
     def update(
         self, 
-        obj_id: Union[int, T], 
+        obj_id: int | T, 
         data: Dict[str, Any]
     ) -> T:
         if isinstance(obj_id, self.model):

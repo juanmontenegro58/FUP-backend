@@ -1,3 +1,6 @@
+from django.core.exceptions import (
+    PermissionDenied
+)
 from rest_framework import (
     viewsets,
 )
@@ -12,6 +15,9 @@ from ..serializers.student import (
 )
 from ..models import (
     Student
+)
+from core.constants.text import (
+    NOT_PERMISSION
 )
 
 @extend_schema_view(
@@ -52,3 +58,15 @@ class StudentViewSet(viewsets.ModelViewSet):
             self.action,
             super().get_serializer_class()
         )
+    
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'programs.view_student',
+            'retrieve': 'programs.view_student',
+            'create': 'programs.create_student',
+            'update': 'programs.change_student',
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()

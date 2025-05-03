@@ -1,3 +1,6 @@
+from django.core.exceptions import (
+    PermissionDenied
+)
 from rest_framework import (
     viewsets
 )
@@ -12,6 +15,9 @@ from ..models import (
 from ..serializers.practical_offer import (
     PracticalOfferCreateModelSerializer,
     PracticalOfferListModelSerializer
+)
+from core.constants.text import (
+    NOT_PERMISSION
 )
 
 @extend_schema_view(
@@ -51,3 +57,15 @@ class PracticalOfferViewSet(viewsets.ModelViewSet):
             self.action,
             super().get_serializer_class()
         )
+    
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'practices.view_practicaloffer',
+            'retrieve': 'practices.view_practicaloffer',
+            'create': 'practices.add_practicaloffer',
+            'udpate': 'practices.change_practicaloffer'
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()

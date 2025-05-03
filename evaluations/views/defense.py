@@ -1,6 +1,7 @@
 from django.core.exceptions import (
     ObjectDoesNotExist,
-    ValidationError
+    ValidationError,
+    PermissionDenied
 )
 from rest_framework import (
     viewsets,
@@ -33,6 +34,9 @@ from ..repositories.defense import (
 )
 from core.validators.validator import (
     ValidatorRules
+)
+from core.constants.text import (
+    NOT_PERMISSION
 )
 
 @extend_schema_view(
@@ -83,6 +87,19 @@ class DefenseViewSet(viewsets.ModelViewSet):
                 super().get_serializer_class()
             )
         )
+    
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'evaluations.view_defense',
+            'retrieve': 'evaluations.view_defense',
+            'create': 'evaluations.add_defense',
+            'update': 'evaluations.change_defense',
+            'reschedule': 'evaluations.change_defense',
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()
     
     @extend_schema(
         summary = 'Reprogramar sustentación',

@@ -1,3 +1,6 @@
+from django.core.exceptions import (
+    PermissionDenied
+)
 from rest_framework import (
     viewsets,
 )
@@ -13,8 +16,8 @@ from ..serializers.company import (
 from ..models import (
     Company
 )
-from ..filters.company import (
-    CompanyFilter
+from core.constants.text import (
+    NOT_PERMISSION
 )
 
 @extend_schema_view(
@@ -51,3 +54,15 @@ class CompanyViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return CompanyDetailSerializer
         return CompanyModelSerializer
+    
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'companies.view_company',
+            'retrieve': 'companies.view_company',
+            'create': 'companies.add_company',
+            'update': 'companies.change_company',
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()

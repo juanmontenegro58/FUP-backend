@@ -1,3 +1,6 @@
+from django.core.exceptions import (
+    PermissionDenied
+)
 from rest_framework import viewsets
 from drf_spectacular.utils import (
     extend_schema_view,
@@ -10,6 +13,9 @@ from ..serializers.contact import (
 )
 from ..models import (
     Contact
+)
+from core.constants.text import (
+    NOT_PERMISSION
 )
 
 @extend_schema_view(
@@ -45,3 +51,15 @@ class ContactViewSet(viewsets.ModelViewSet):
         if self.action == 'retrieve':
             return ContactDetailSerializer
         return super().get_serializer_class()
+    
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'companies.view_contact',
+            'retrieve': 'companies.view_contact',
+            'create': 'companies.add_contact',
+            'update': 'companies.change_contact',
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()

@@ -1,6 +1,5 @@
 from django.core.exceptions import (
-    ObjectDoesNotExist,
-    ValidationError
+    PermissionDenied
 )
 from rest_framework import (
     viewsets,
@@ -25,14 +24,14 @@ from ..serializers.practice import (
 from ..models import (
     Practice
 )
-from core.validators.validator import (
-    ValidatorRules
-)
 from ..repositories.internship_tracking import (
     InternshipTrackingRepository
 )
 from ..repositories.practice import (
     DocumentPracticeRepository
+)
+from core.constants.text import (
+    NOT_PERMISSION
 )
 
 @extend_schema_view(
@@ -78,6 +77,19 @@ class PracticeViewSet(viewsets.ModelViewSet):
                 super().get_serializer_class()
             )
         )
+    
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'practices.view_practice',
+            'retrieve': 'practices.view_practice',
+            'create': 'practices.add_practice',
+            'update': 'practices.change_practice',
+            'upload_documents': 'practices.add_documentpractice'
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()
     
     @extend_schema(
         methods = ['get'],

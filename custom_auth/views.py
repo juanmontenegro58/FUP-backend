@@ -67,12 +67,12 @@ class PasswordValidationView(APIView):
 
         try:
             common_validator.validate(password)
-        except ValidationError as e:
+        except ValidationError:
             response_data['common'] = False
 
         try:
             similarity_validator.validate(password, user=user)
-        except ValidationError as e:
+        except ValidationError:
             response_data['similarity'] = False
 
         return Response(response_data, status=status.HTTP_200_OK)

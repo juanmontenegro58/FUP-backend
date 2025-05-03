@@ -1,3 +1,6 @@
+from django.core.exceptions import (
+    PermissionDenied
+)
 from rest_framework import viewsets
 from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import (
@@ -10,6 +13,9 @@ from ..serializers.document_agreement import (
 )
 from ..models import (
     DocumentAgreement
+)
+from core.constants.text import (
+    NOT_PERMISSION
 )
 
 class CustomPageDocuments(PageNumberPagination):
@@ -44,3 +50,15 @@ class DocumentAgreementViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentAgreementModelSerializer
     http_method_names = ['get', 'post', 'put']
     pagination_class = CustomPageDocuments
+
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'agreements.view_documentagreement',
+            'retrieve': 'agreements.view_documentagreement',
+            'create': 'agreements.add_documentagreement',
+            'update': 'agreements.change_documentagreement',
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()

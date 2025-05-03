@@ -1,3 +1,6 @@
+from django.core.exceptions import (
+    PermissionDenied
+)
 from rest_framework import (
     viewsets,
 )
@@ -11,6 +14,9 @@ from ..serializers.program import (
 )
 from ..models import (
     Program
+)
+from core.constants.text import (
+    NOT_PERMISSION
 )
 
 @extend_schema_view(
@@ -42,3 +48,15 @@ class ProgramViewSet(viewsets.ModelViewSet):
     serializer_class = ProgramModelSerializer
     http_method_names = ['get', 'post', 'put']
     search_fields = ['name']
+
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'programs.view_program',
+            'retrieve': 'programs.view_program',
+            'create': 'programs.add_program',
+            'update': 'programs.change_program',
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()

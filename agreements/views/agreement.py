@@ -47,6 +47,9 @@ from core.validators.validator import (
 from programs.repositories.student import (
     StudentRepository
 )
+from core.constants.text import (
+    NOT_PERMISSION
+)
 
 @extend_schema_view(
     list=extend_schema(
@@ -83,6 +86,21 @@ class AgreementViewSet(viewsets.ModelViewSet):
         'documentation_status',
         'scope'
     ]
+
+    def get_permissions(self):
+        action_permissions = {
+            'list': 'agreements.view_agreement',
+            'retrieve': 'agreements.view_agreement',
+            'create': 'agreements.add_agreement',
+            'update': 'agreements.change_agreement',
+            'upload_documents': 'agreements.add_agreementdocumentthrough',
+            'assign_student': 'agreements.add_agreementstudentthrough',
+            'documents': 'agreements.view_agreementdocumentthrough'
+        }
+        perm = action_permissions.get(self.action)
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()
 
     def get_serializer_class(self):
         serializers = {
@@ -209,6 +227,15 @@ class UpdateAgreementDocumentStatusView(APIView):
 
     serializer_class = AgreementDocumentChangeStateSerializer
 
+    def get_permissions(self):
+        methods_permissions = {
+            'post': 'agreements.change_agreementdocumentthrough'
+        }
+        perm = methods_permissions.get(self.request.method.lower())
+        if perm and not self.request.user.has_perm(perm):
+            raise PermissionDenied(NOT_PERMISSION)
+        return super().get_permissions()
+
     @extend_schema(
         summary = 'Cambiar estado del documento',
         description = 'Permite cambiar el estado del documento.',
@@ -252,8 +279,6 @@ class UpdateAgreementDocumentStatusView(APIView):
                 status = status.HTTP_403_FORBIDDEN
             )
         except Exception as e:
-            import traceback
-            print(traceback.print_exc())
             return Response(
                 {'message': 'Error interno, por favor intenta más tarde.'},
                 status = status.HTTP_500_INTERNAL_SERVER_ERROR
