@@ -12,7 +12,8 @@ from .views import (
     CustomTokenObtainPairView,
     PasswordValidationView,
     ValidateInfoUserView,
-    RegisterView
+    RegisterView,
+    PermissionsView
 )
 
 urlpatterns = [
@@ -22,6 +23,7 @@ urlpatterns = [
     path('users/validate-password', PasswordValidationView.as_view()),
     path('users/validate-document-number', ValidateInfoUserView.as_view()),
     path('users/register', RegisterView.as_view()),
+    path('users/permissions', PermissionsView.as_view()),
     
     re_path(r'^users/reset_password/?$', UserViewSet.as_view({'post': 'reset_password'}), name='password-reset'),
     re_path(r'^users/reset_password_confirm/?$', UserViewSet.as_view({'post': 'reset_password_confirm'}), name='password-reset-confirm'),

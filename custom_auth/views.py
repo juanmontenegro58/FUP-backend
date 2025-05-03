@@ -1,6 +1,12 @@
-from django.contrib.auth.models import Group
+from django.contrib.auth.models import (
+    Group,
+    Permission
+)
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.views import APIView
+from rest_framework.generics import (
+    ListAPIView
+)
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from django.core.exceptions import ValidationError
@@ -13,7 +19,8 @@ from .serializers.user import (
     ValidatePasswordSerializer,
     ValidatePasswordResponseSerializer,
     RegisterSerializer,
-    ValidateDocumentNumberSerializer
+    ValidateDocumentNumberSerializer,
+    PermissionsRoleListSerializer
 )
 from .utils.user import (
     find_user_info_by_document
@@ -158,3 +165,27 @@ class RegisterView(APIView):
         instance.save()
         
         return Response(status = status.HTTP_201_CREATED)
+    
+class PermissionsView(ListAPIView):
+    """ Lista los permisos del usuario basado en su rol y permisos añadidos individualmente. """
+    
+    serializer_class = PermissionsRoleListSerializer
+    pagination_class = None
+    filter_backends = []
+    
+    @extend_schema(
+        methods=['get'],
+        summary='Obtener permisos',
+        tags=['v1'],
+    )
+    def get(self, request, *args, **kwargs):
+        try:
+            role_permissions = self.request.user.role.permissions.all()
+        except:
+            role_permissions = Permission.objects.none()
+        user_permissions = self.request.user.user_permissions.all()
+
+        perms = role_permissions | user_permissions
+        codenames = set(perm.codename for perm in perms)
+        serializer = self.get_serializer({'permissions': codenames})
+        return Response(serializer.data)

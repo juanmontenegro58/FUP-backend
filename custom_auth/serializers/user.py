@@ -1,3 +1,6 @@
+from django.contrib.auth.models import (
+    Permission
+)
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -50,3 +53,9 @@ class ValidateDocumentNumberSerializer(serializers.Serializer):
 
 class RegisterSerializer(ValidateDocumentNumberSerializer):
     password = serializers.CharField()
+
+class PermissionsRoleListSerializer(serializers.Serializer):
+
+    permissions = serializers.ListField(
+        child = serializers.CharField()
+    )
