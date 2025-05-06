@@ -44,6 +44,8 @@ class CurrentRoleBackend(BaseBackend):
         }
 
     def has_perm(self, user_obj, perm, obj=None):
+        if user_obj.is_anonymous:
+            return True
         if not user_obj.role:
             raise PermissionDenied()
         if perm in self.get_all_permissions(user_obj, obj = obj):
