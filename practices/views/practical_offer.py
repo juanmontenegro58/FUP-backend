@@ -14,7 +14,8 @@ from ..models import (
 )
 from ..serializers.practical_offer import (
     PracticalOfferCreateModelSerializer,
-    PracticalOfferListModelSerializer
+    PracticalOfferListModelSerializer,
+    PracticalOfferDetailSerializer
 )
 from core.constants.text import (
     NOT_PERMISSION
@@ -51,7 +52,8 @@ class PracticalOfferViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         actions = {
-            'list': PracticalOfferListModelSerializer
+            'list': PracticalOfferListModelSerializer,
+            'retrieve': PracticalOfferDetailSerializer
         }
         return actions.get(
             self.action,

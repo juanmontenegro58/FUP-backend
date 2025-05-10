@@ -88,11 +88,6 @@ class AgreementCreateModelSerializer(serializers.ModelSerializer):
     
 class AgreementDetailModelSerializer(serializers.ModelSerializer):
 
-    # documents = AgreementDocumentThroughModelSerializer(
-    #     source = 'agreementdocumentthrough_set',
-    #     many = True, 
-    #     read_only = True
-    # )
     company = CompanyModelSerializer()
     program = ProgramModelSerializer()
     
@@ -146,3 +141,17 @@ class AgreementNestedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Agreement
         exclude = ['documents', 'program', 'students']
+
+class AgreementNestedCompanySerializer(serializers.ModelSerializer):
+
+    company = CompanyModelSerializer()
+
+    class Meta:
+        model = Agreement
+        fields = [
+            'company',
+            'name',
+            'initial_date',
+            'end_date',
+            'description'
+        ]
