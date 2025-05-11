@@ -7,6 +7,7 @@ from django.core.exceptions import (
 from core.interfaces.validator import (
     ValidatorInterface
 )
+from evaluations.models.defense import Defense
 from ..enums import (
     DefenseStatusEnum
 )
@@ -27,7 +28,7 @@ class DefenseStatusValidator(ValidatorInterface):
             ValidationError: Si la sustentación ya está completada.
         """
         if data['defense'].status == DefenseStatusEnum.COMPLETADA.value:
-            raise ValidationError('No se puede reprogramar una sustentación completada.')
+            raise ValidationError('No se puede realizar la operación en una sustentación completada.')
 
 class DefenseNewDateValidator(ValidatorInterface):
 

@@ -3,6 +3,9 @@ from django.core.exceptions import (
     ValidationError,
     PermissionDenied
 )
+from django.db.transaction import (
+    atomic
+)
 from rest_framework import (
     viewsets,
     status
@@ -20,7 +23,8 @@ from ..serializers.defense import (
     DefenseDetailModelSerializer,
     DefenseRescheduleSerializer,
     DefenseCommentModelSerializer,
-    DefenseCommentSerializer
+    DefenseCommentSerializer,
+    DefenseFinishSerializer
 )
 from ..models import (
     Defense
@@ -30,13 +34,17 @@ from ..controllers.defense import (
 )
 from ..repositories.defense import (
     DefenseRepository,
-    DefenseCommentRepository
+    DefenseCommentRepository,
+    DocumentDefenseRepository
 )
 from core.validators.validator import (
     ValidatorRules
 )
 from core.constants.text import (
     NOT_PERMISSION
+)
+from ..enums import (
+    DefenseStatusEnum
 )
 
 @extend_schema_view(
@@ -78,7 +86,8 @@ class DefenseViewSet(viewsets.ModelViewSet):
             'list': DefenseListModelSerializer,
             'retrieve': DefenseDetailModelSerializer,
             'comments': DefenseCommentModelSerializer,
-            'reschedule': DefenseRescheduleSerializer
+            'reschedule': DefenseRescheduleSerializer,
+            'finish': DefenseFinishSerializer
         }
         return (
             serializers
@@ -169,6 +178,44 @@ class DefenseViewSet(viewsets.ModelViewSet):
             return self.handle_get_comments(request, pk)
         if request.method == 'POST':
             return self.handle_post_comments(request, pk)
+    
+    @extend_schema(
+        methods = ['post'],
+        summary = 'Finalizar sustentación',
+        description = 'Cierra o finaliza una sustentación',
+        tags = ['Sustentación'],
+        request = DefenseFinishSerializer,
+        responses = {
+            204: None
+        }
+    )
+    @action(detail = True, methods = ['post'], url_path = 'finish')
+    def finish(self, request, pk = None):
+        
+        serializer = self.get_serializer(data = request.data)
+        serializer.is_valid(raise_exception = True)
+
+        defense_repository = DefenseRepository()
+        document_def_repository = DocumentDefenseRepository()
+        try:
+            defense: Defense = defense_repository.get_by_id(obj_id = pk)
+            document = document_def_repository.filter(name__iexact = 'acta de sustentación')
+            with atomic():
+                if document.exists():
+                    document.delete()
+                document_def_repository.create(
+                    name = 'Acta de sustentación',
+                    file = serializer.validated_data['supporting_document'],
+                    defense_id = pk,
+                    uploaded_by = request.user
+                )
+                defense.status = DefenseStatusEnum.COMPLETADA.value
+                defense.result = serializer.data['result']
+                defense.save()
+        except Exception as e:
+            return Response({'detail': 'Error procesando la información'}, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(status = status.HTTP_204_NO_CONTENT)
     
     def handle_get_comments(self, request, pk = None):
         repository = DefenseCommentRepository()

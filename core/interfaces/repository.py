@@ -1,4 +1,5 @@
 from typing import (
+    Tuple,
     Type, 
     TypeVar, 
     Generic, 
@@ -55,3 +56,6 @@ class RepositoryInterface(Generic[T]):
         **kwargs
     ) -> Dict[str, Any]:
         return self.model.objects.aggregate(**kwargs)
+    
+    def get_or_create(self, item: Dict[str, Any]) -> Tuple[T, bool]:
+        return self.model.objects.get_or_create(**item)

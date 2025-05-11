@@ -5,5 +5,6 @@ from .defense import (
     Defense,
     DefenseStudentThrough,
     DefenseTeacherThrough,
-    DefenseComment
+    DefenseComment,
+    DocumentDefense
 )

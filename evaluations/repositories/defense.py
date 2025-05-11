@@ -4,7 +4,8 @@ from core.interfaces.repository import (
 
 from ..models import (
     Defense,
-    DefenseComment
+    DefenseComment,
+    DocumentDefense
 )
 
 class DefenseRepository(RepositoryInterface[Defense]):
@@ -16,3 +17,8 @@ class DefenseCommentRepository(RepositoryInterface[DefenseComment]):
 
     def __init__(self):
         super().__init__(DefenseComment)
+
+class DocumentDefenseRepository(RepositoryInterface[DocumentDefense]):
+
+    def __init__(self):
+        super().__init__(DocumentDefense)

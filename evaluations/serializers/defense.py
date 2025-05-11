@@ -6,7 +6,8 @@ from ..models import (
     Defense,
     DefenseStudentThrough,
     DefenseTeacherThrough,
-    DefenseComment
+    DefenseComment,
+    DocumentDefense
 )
 from programs.models import (
     Student
@@ -21,6 +22,16 @@ from .teacher import (
 from ..enums import (
     DefenseStatusEnum
 )
+from ..models.choices import (
+    DEFENSE_RESULT_CHOICES
+)
+
+class DocumentDefenseModelSerializer(serializers.ModelSerializer):
+
+    uploaded_by = serializers.StringRelatedField()
+    class Meta:
+        model = DocumentDefense
+        fields = ['name', 'file', 'uploaded_by', 'updated_at']
 
 class DefenseStudentThroughModelSerializer(serializers.ModelSerializer):
 
@@ -140,6 +151,7 @@ class DefenseDetailModelSerializer(serializers.ModelSerializer):
         many = True,
         source = 'defenseteacherthrough_set'
     )
+    documentdefense_set = DocumentDefenseModelSerializer(many = True)
 
     class Meta:
         model = Defense
@@ -159,3 +171,11 @@ class DefenseRescheduleSerializer(serializers.Serializer):
 
 class DefenseCommentSerializer(serializers.Serializer):
     comment = serializers.CharField()
+
+class DefenseFinishSerializer(serializers.Serializer):
+    result = serializers.ChoiceField(
+        choices = DEFENSE_RESULT_CHOICES
+    )
+    supporting_document = serializers.FileField(
+        help_text = 'Acta de sustentación'
+    )

@@ -74,6 +74,7 @@ ROLES_PERMISSIONS = {
         'add_agreementdocumentcomment',
         'change_agreementdocumentcomment',
         'view_agreementdocumentcomment',
+        'finish_defense'
     ]
 }
 

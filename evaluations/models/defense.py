@@ -74,6 +74,9 @@ class Defense(TimeStampedBaseModel):
     class Meta:
         ordering = ['created_at']
         verbose_name_plural: str = 'Sustentaciones'
+        permissions = [
+            ('finish_defense', "Finalizar sustentación")
+        ]
 
     def __str__(self):
         return str(self.scheduled_date)
