@@ -199,7 +199,7 @@ class DefenseViewSet(viewsets.ModelViewSet):
         document_def_repository = DocumentDefenseRepository()
         try:
             defense: Defense = defense_repository.get_by_id(obj_id = pk)
-            document = document_def_repository.filter(name__iexact = 'acta de sustentación')
+            document = document_def_repository.filter(name__iexact = 'acta de sustentación', defense = defense)
             with atomic():
                 if document.exists():
                     document.delete()
