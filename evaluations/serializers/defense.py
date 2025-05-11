@@ -18,6 +18,9 @@ from .teacher import (
     TeacherDefenseSerializer,
     TeacherModelSerializer
 )
+from ..enums import (
+    DefenseStatusEnum
+)
 
 class DefenseStudentThroughModelSerializer(serializers.ModelSerializer):
 
@@ -85,6 +88,8 @@ class DefenseModelSerializer(serializers.ModelSerializer):
     
     @transaction.atomic
     def update(self, instance, validated_data):
+        if instance.status == DefenseStatusEnum.COMPLETADA.value:
+            raise serializers.ValidationError({'application_date': 'No se puede modificar una sustentación completada'})
         validated_data.pop('application_date')
         validated_data.pop('scheduled_date')
         students = validated_data.pop('students')
@@ -117,10 +122,10 @@ class DefenseListModelSerializer(serializers.ModelSerializer):
         model = Defense
         exclude = ['teachers']
     @extend_schema_field(
-            serializers.ListField(
-                child = serializers.CharField(),
-                help_text = 'Lista de nombres de los estudiantes asociados'
-            )
+        serializers.ListField(
+            child = serializers.CharField(),
+            help_text = 'Lista de nombres de los estudiantes asociados'
+        )
     )
     def get_students(self, obj):
         return [student.full_name for student in obj.students.all()]

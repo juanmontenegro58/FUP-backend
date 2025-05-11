@@ -52,8 +52,16 @@ class Defense(TimeStampedBaseModel):
         max_length = 100,
         verbose_name = 'Resultado final',
         choices = DEFENSE_RESULT_CHOICES,
-        default = 'N/A'
     )
+    period = models.CharField(
+        max_length = 100,
+        verbose_name = 'Periodo'
+    )
+    place = models.CharField(
+        max_length = 100,
+        verbose_name = 'Lugar'
+    )
+
     students = models.ManyToManyField(
         Student,
         through = 'DefenseStudentThrough'
@@ -69,6 +77,46 @@ class Defense(TimeStampedBaseModel):
 
     def __str__(self):
         return str(self.scheduled_date)
+    
+class DocumentDefense(TimeStampedBaseModel):
+    """ 
+    Modelo de documentos de sustentación, hereda de la clase abstracta `TimeStampedBaseModel`
+
+    Inherit:
+        TimeStampedBaseModel: Proporciona los Atributos de marca de tiempo.
+            created_at (DateTimeField): Fecha y hora de la creación.
+            updated_at (DateTimeField): Fecha y hora de modificación.
+
+    Attributes:
+        name (CharField): Nombre del documento.
+        file (FileField): Archivo.
+        defense (ForeignKey): Relación con el modelo de `Defense`.
+    """
+
+    name = models.CharField(
+        max_length = 100,
+        verbose_name = 'Nombre'
+    )
+    file = models.FileField(
+        verbose_name = 'Archivo'
+    )
+    defense = models.ForeignKey(
+        Defense,
+        on_delete = models.PROTECT,
+        verbose_name = 'Práctica'
+    )
+    uploaded_by = models.ForeignKey(
+        CustomUser,
+        on_delete = models.PROTECT,
+        verbose_name = 'Subido por'
+    )
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name_plural: str = 'Documentos de práctica'
+
+    def __str__(self):
+        return self.name
     
 class DefenseStudentThrough(TimeStampedBaseModel):
     """ 

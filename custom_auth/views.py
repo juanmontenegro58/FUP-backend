@@ -181,7 +181,7 @@ class PermissionsView(ListAPIView):
     def get(self, request, *args, **kwargs):
         try:
             role_permissions = self.request.user.role.permissions.all()
-        except:
+        except Exception:
             role_permissions = Permission.objects.none()
         user_permissions = self.request.user.user_permissions.all()
 
