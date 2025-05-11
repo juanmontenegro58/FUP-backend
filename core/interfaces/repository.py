@@ -49,3 +49,9 @@ class RepositoryInterface(Generic[T]):
                 setattr(obj, key, value)
         obj.save()
         return obj
+    
+    def aggregate(
+        self, 
+        **kwargs
+    ) -> Dict[str, Any]:
+        return self.model.objects.aggregate(**kwargs)

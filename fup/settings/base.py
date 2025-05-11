@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'agreements',
     'practices',
     'evaluations',
+    'reports',
 
     # Third apps
     'rest_framework',
