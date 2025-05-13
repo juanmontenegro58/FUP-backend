@@ -149,6 +149,7 @@ class AgreementNestedCompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Agreement
         fields = [
+            'id',
             'company',
             'name',
             'initial_date',
