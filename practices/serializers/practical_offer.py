@@ -18,7 +18,7 @@ class PracticalOfferListModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PracticalOffer
-        fields = ['title', 'close_date', 'vacancies', 'agreement']
+        fields = ['id', 'title', 'close_date', 'vacancies', 'agreement']
 
 class PracticalOfferDetailSerializer(serializers.ModelSerializer):
 
