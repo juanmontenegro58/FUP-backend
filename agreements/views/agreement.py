@@ -50,6 +50,9 @@ from programs.repositories.student import (
 from core.constants.text import (
     NOT_PERMISSION
 )
+from core.decorators import (
+    permission_required
+)
 
 @extend_schema_view(
     list=extend_schema(
@@ -285,3 +288,26 @@ class UpdateAgreementDocumentStatusView(APIView):
             )
 
         return Response({'message': 'Estado del documento actualizado con éxito.'}, status = status.HTTP_200_OK)
+
+class ToggleStatusAgreementView(APIView):
+
+    serializer_class = None
+
+    @permission_required('agreements.toggle_status')
+    def post(self, request, agreement_id):
+        agreement_repo = AgreementRepository()
+        try:
+            agreement: Agreement = agreement_repo.get_by_id(obj_id = agreement_id)
+            if agreement.status.upper() == 'INACTIVO':
+                agreement.status = 'ACTIVO'
+            else:
+                agreement.status = 'INACTIVO'
+            agreement.save()
+        except ObjectDoesNotExist as e:
+            return Response({'message': str(e)}, status = status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(
+                {'message': 'Error interno, por favor intenta más tarde.'},
+                status = status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        return Response(status = status.HTTP_200_OK)

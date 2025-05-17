@@ -1,7 +1,9 @@
 from .document_agreement import (
-    DocumentAgreementViewSet
+    DocumentAgreementViewSet,
+    ToggleStatusDocumentAgreementView
 )
 from .agreement import (
     AgreementViewSet,
-    UpdateAgreementDocumentStatusView
+    UpdateAgreementDocumentStatusView,
+    ToggleStatusAgreementView
 )

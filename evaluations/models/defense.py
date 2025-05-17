@@ -9,7 +9,8 @@ from core.models import (
 from .choices import (
     DEFENSE_STATUS_CHOICES,
     DEFENSE_RESULT_CHOICES,
-    DEFENSE_TEACHER_ROLE_CHOICES
+    DEFENSE_TEACHER_ROLE_CHOICES,
+    ACADEMIC_SESSION_CHOICES
 )
 from programs.models import (
     Student
@@ -61,7 +62,10 @@ class Defense(TimeStampedBaseModel):
         max_length = 100,
         verbose_name = 'Lugar'
     )
-
+    academic_session = models.CharField(
+        max_length = 100,
+        choices = ACADEMIC_SESSION_CHOICES
+    )
     students = models.ManyToManyField(
         Student,
         through = 'DefenseStudentThrough'

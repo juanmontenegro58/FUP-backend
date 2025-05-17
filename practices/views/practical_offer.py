@@ -49,6 +49,10 @@ class PracticalOfferViewSet(viewsets.ModelViewSet):
     queryset = PracticalOffer.objects.all()
     serializer_class =PracticalOfferCreateModelSerializer
     http_method_names = ['get', 'post', 'put']
+    search_fields = [
+        'title',
+        'skills'
+    ]
 
     def get_serializer_class(self):
         actions = {

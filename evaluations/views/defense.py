@@ -79,6 +79,7 @@ class DefenseViewSet(viewsets.ModelViewSet):
         'students__full_name',
         'students__document_number',
         'students__code',
+        'place'
     ]
 
     def get_serializer_class(self):

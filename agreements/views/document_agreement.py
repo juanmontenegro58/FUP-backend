@@ -1,7 +1,15 @@
 from django.core.exceptions import (
-    PermissionDenied
+    PermissionDenied,
+    ObjectDoesNotExist
 )
-from rest_framework import viewsets
+from rest_framework.views import APIView
+from rest_framework import (
+    viewsets,
+    status
+)
+from rest_framework.response import (
+    Response
+)
 from rest_framework.pagination import PageNumberPagination
 from drf_spectacular.utils import (
     extend_schema,
@@ -14,8 +22,14 @@ from ..serializers.document_agreement import (
 from ..models import (
     DocumentAgreement
 )
+from ..repositories.document import (
+    DocumentAgreementRepository
+)
 from core.constants.text import (
     NOT_PERMISSION
+)
+from core.decorators import (
+    permission_required
 )
 
 class CustomPageDocuments(PageNumberPagination):
@@ -50,6 +64,9 @@ class DocumentAgreementViewSet(viewsets.ModelViewSet):
     serializer_class = DocumentAgreementModelSerializer
     http_method_names = ['get', 'post', 'put']
     pagination_class = CustomPageDocuments
+    filterset_fields = [
+        'is_active'
+    ]
 
     def get_permissions(self):
         action_permissions = {
@@ -62,3 +79,23 @@ class DocumentAgreementViewSet(viewsets.ModelViewSet):
         if perm and not self.request.user.has_perm(perm):
             raise PermissionDenied(NOT_PERMISSION)
         return super().get_permissions()
+    
+class ToggleStatusDocumentAgreementView(APIView):
+
+    serializer_class = None
+
+    @permission_required('agreements.toggle_status_document')
+    def post(self, request, document_id):
+        doc_repo = DocumentAgreementRepository()
+        try:
+            document: DocumentAgreement = doc_repo.get_by_id(obj_id = document_id)
+            document.is_active = not document.is_active
+            document.save()
+        except ObjectDoesNotExist as e:
+            return Response({'message': str(e)}, status = status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response(
+                {'message': 'Error interno, por favor intenta más tarde.'},
+                status = status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        return Response(status = status.HTTP_200_OK)

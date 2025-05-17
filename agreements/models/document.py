@@ -28,10 +28,16 @@ class DocumentAgreement(TimeStampedBaseModel):
         max_length = 500,
         verbose_name = 'Descripción'
     )
+    is_active = models.BooleanField(
+        default = True,
+    )
 
     class Meta:
         ordering = ['created_at']
         verbose_name_plural: str = 'Documentos convenio'
+        permissions = [
+            ('toggle_status_document', 'Puede cambiar el estado del documento'),
+        ]
 
     def __str__(self):
         return self.name

@@ -126,6 +126,9 @@ class Agreement(TimeStampedBaseModel):
     class Meta:
         ordering = ['created_at']
         verbose_name_plural: str = 'Convenios'
+        permissions = [
+            ('toggle_status', 'Puede cambiar el estado del convenio'),
+        ]
 
     def __str__(self):
         return self.name

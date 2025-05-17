@@ -61,7 +61,10 @@ class PracticalOffer(TimeStampedBaseModel):
         default=1, 
         verbose_name='Vacantes'
     )
-
+    location = models.CharField(
+        max_length = 100,
+        verbose_name = 'Ubicación'
+    )
     class Meta:
         verbose_name: str = 'Oferta práctica'
         verbose_name_plural: str = 'Ofertas practicas'
