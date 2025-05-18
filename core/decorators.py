@@ -2,16 +2,6 @@ from functools import wraps
 
 from django.core import exceptions
 
-# def user_passes_test(test_func, exc=exceptions.PermissionDenied):
-#     def decorator(method):
-#         @wraps(method)
-#         def _wrapped_method(self, request, *args, **kwargs):
-#             if test_func(request.user):
-#                 return method(self, request, *args, **kwargs)
-#             raise exc()
-#         return _wrapped_method
-#     return decorator
-
 def user_passes_test(test_func, exc=exceptions.PermissionDenied):
     def decorator(method):
         @wraps(method)

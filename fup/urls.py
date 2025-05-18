@@ -47,6 +47,10 @@ from practices.views import (
     PracticeViewSet,
     PracticalOfferViewSet
 )
+from custom_auth.views import (
+    UserViewSet,
+    RoleViewSet,
+)
 
 router = SimpleRouter(trailing_slash = False)
 router.register(r'companies', CompanyViewSet, basename = 'company')
@@ -59,10 +63,12 @@ router.register(r'teachers', TeacherViewSet, basename = 'teacher')
 router.register(r'defenses', DefenseViewSet, basename = 'defense')
 router.register(r'practices', PracticeViewSet, basename = 'practice')
 router.register(r'practical-offers', PracticalOfferViewSet, basename = 'practical-offer')
+router.register(r'users', UserViewSet, basename = 'user')
+router.register(r'roles', RoleViewSet, basename = 'role')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/v1/auth/', include('custom_auth.urls')),
+    path('api/v1/', include('custom_auth.urls')),
     path('api/v1/', include(router.urls)),
     path('api/v1/', include('agreements.urls')),
     path('api/v1/reports/', include('reports.urls')),

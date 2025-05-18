@@ -1,5 +1,7 @@
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import (
-    Permission
+    Group
 )
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -9,6 +11,8 @@ from ..models import (
 )
 
 class UserListModelSerializer(serializers.ModelSerializer):
+
+    role = serializers.StringRelatedField()
     class Meta:
         model = CustomUser
         exclude = [
@@ -17,12 +21,62 @@ class UserListModelSerializer(serializers.ModelSerializer):
             'is_superuser',
             'last_login',
             'date_joined',
-            'is_active',
             'groups',
             'user_permissions',
-            'role',
         ]
 
+class UserCreateModelSerializer(serializers.ModelSerializer):
+
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    role = serializers.PrimaryKeyRelatedField(
+        queryset = Group.objects.all()
+    )
+    new_password = serializers.CharField(
+        write_only = True,
+        required = False
+    )
+    
+    class Meta:
+        model = CustomUser
+        fields = [
+            'id',
+            'first_name',
+            'last_name',
+            'role',
+            'email',
+            'new_password'
+        ]
+
+    def validate(self, attrs):
+        if self.instance is None:
+            if 'new_password' not in attrs:
+                raise serializers.ValidationError({'new_password': 'La constraseña es obligatoria'})
+        return attrs
+
+    def validate_new_password(self, value):
+        try:
+            validate_password(value)
+        except ValidationError as e:
+            raise serializers.ValidationError(e.messages)
+        return value
+    
+    def create(self, validated_data):
+        password = validated_data.pop('new_password')
+        user: CustomUser = super().create(validated_data)
+        user.set_password(password)
+        user.save()
+        return user
+    
+    def update(self, instance, validated_data):
+        password = None
+        if 'new_password' in validated_data:
+            password = validated_data.pop('new_password')
+        user: CustomUser = super().update(instance, validated_data)
+        if password:
+            user.set_password(password)
+            user.save()
+        return user
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod

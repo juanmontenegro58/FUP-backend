@@ -77,15 +77,6 @@ class AgreementCreateModelSerializer(serializers.ModelSerializer):
                 'Debe incluir al menos un documento en el convenio'
             )
         return value
-    
-
-    def create(self, validated_data):
-        documents = validated_data.pop('documents')
-
-        agreement = Agreement.objects.create(**validated_data)
-        agreement.documents.add(*documents)
-        return agreement
-    
 class AgreementDetailModelSerializer(serializers.ModelSerializer):
 
     company = CompanyModelSerializer()

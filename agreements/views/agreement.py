@@ -289,6 +289,13 @@ class UpdateAgreementDocumentStatusView(APIView):
 
         return Response({'message': 'Estado del documento actualizado con éxito.'}, status = status.HTTP_200_OK)
 
+@extend_schema_view(
+    post=extend_schema(
+        summary="Cambiar estado convenio",
+        description="Intercambia el estado del convenio entre ACTIVO e INACTIVO.",
+        tags = ['Convenio']
+    ),
+)
 class ToggleStatusAgreementView(APIView):
 
     serializer_class = None

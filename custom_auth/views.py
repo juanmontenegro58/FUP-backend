@@ -7,8 +7,14 @@ from rest_framework.views import APIView
 from rest_framework.generics import (
     ListAPIView
 )
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
-from rest_framework import status, permissions
+from rest_framework import (
+    status, 
+    permissions,
+    viewsets
+)
+from rest_framework.decorators import action
 from django.core.exceptions import ValidationError
 from drf_spectacular.utils import extend_schema
 from django.contrib.auth.password_validation import validate_password
@@ -20,7 +26,16 @@ from .serializers.user import (
     ValidatePasswordResponseSerializer,
     RegisterSerializer,
     ValidateDocumentNumberSerializer,
-    PermissionsRoleListSerializer
+    PermissionsRoleListSerializer,
+    UserListModelSerializer,
+    UserCreateModelSerializer
+)
+from .serializers.role import (
+    RoleModelSerializer,
+    RoleListSerializer
+)
+from .serializers.permission import (
+    PermissionModelSerializer
 )
 from .utils.user import (
     find_user_info_by_document
@@ -32,6 +47,9 @@ from .models import (
     CustomUser
 )
 from core.validators.validator import ValidatorRules
+from core.decorators import (
+    superuser_required
+)
 
 # Create your views here.
 
@@ -45,6 +63,8 @@ from django.contrib.auth.password_validation import (
     UserAttributeSimilarityValidator,
 )
 
+class CustomPagePermissions(PageNumberPagination):
+    page_size = 100
 
 class PasswordValidationView(APIView):
 
@@ -189,3 +209,53 @@ class PermissionsView(ListAPIView):
         codenames = set(perm.codename for perm in perms)
         serializer = self.get_serializer({'permissions': codenames})
         return Response(serializer.data)
+    
+class UserViewSet(viewsets.ModelViewSet):
+
+    queryset = CustomUser.objects.all()
+    serializer_class = UserListModelSerializer
+    http_method_names = ['post', 'put', 'get']
+    search_fields = [
+        'first_name',
+        'last_name',
+        'email'
+    ]
+
+    def get_serializer_class(self):
+        actions = {
+            'create': UserCreateModelSerializer,
+            'update': UserCreateModelSerializer,
+            'toggle_status': None
+        }
+        return actions.get(
+            self.action,
+            super().get_serializer_class()
+        )
+    
+    @action(detail = True, methods = ['post'], url_path = 'toggle-status')
+    def toggle_status(self, request, pk = None):
+        user = CustomUser.objects.get(pk = pk)
+        user.is_active = not user.is_active
+        user.save()
+        return Response(status = status.HTTP_204_NO_CONTENT)
+    
+class RoleViewSet(viewsets.ModelViewSet):
+
+    queryset = Group.objects.all().order_by('name')
+    serializer_class = RoleModelSerializer
+    http_method_names = ['post', 'put', 'get']
+
+    def get_serializer_class(self):
+        actions = {
+            'list': RoleListSerializer
+        }
+        return actions.get(
+            self.action,
+            super().get_serializer_class()
+        )
+
+class PermissionListView(ListAPIView):
+
+    queryset = Permission.objects.all().order_by('codename')
+    serializer_class = PermissionModelSerializer
+    pagination_class = CustomPagePermissions

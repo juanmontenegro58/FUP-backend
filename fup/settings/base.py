@@ -184,5 +184,8 @@ DJOSER = {
     'SEND_ACTIVATION_EMAIL': False,
     'SEND_CONFIRMATION_EMAIL': False,
     'SET_PASSWORD_RETYPE': False,
-    'PASSWORD_RESET_CONFIRM_RETYPE': True
+    'PASSWORD_RESET_CONFIRM_RETYPE': True,
+    'SERIALIZERS': {
+        'current_user': 'custom_auth.serializers.user.UserListModelSerializer'
+    }
 }

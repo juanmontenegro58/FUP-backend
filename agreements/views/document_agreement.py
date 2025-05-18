@@ -80,6 +80,13 @@ class DocumentAgreementViewSet(viewsets.ModelViewSet):
             raise PermissionDenied(NOT_PERMISSION)
         return super().get_permissions()
     
+@extend_schema_view(
+    post=extend_schema(
+        summary="Cambiar estado del documento",
+        description="Intercambia el estado del documento `is_active` entre True y False.",
+        tags = ['Documento']
+    ),
+)
 class ToggleStatusDocumentAgreementView(APIView):
 
     serializer_class = None
