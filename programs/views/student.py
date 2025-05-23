@@ -11,7 +11,8 @@ from drf_spectacular.utils import (
 
 from ..serializers.student import (
     StudentModelSerializer,
-    StudentListModelSerializer
+    StudentListModelSerializer,
+    StudentCreateModelSerializer
 )
 from ..models import (
     Student
@@ -52,7 +53,9 @@ class StudentViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         actions = {
-            'list': StudentListModelSerializer
+            'list': StudentListModelSerializer,
+            'create': StudentCreateModelSerializer,
+            'update': StudentCreateModelSerializer
         }
         return actions.get(
             self.action,
