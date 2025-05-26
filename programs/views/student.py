@@ -55,7 +55,8 @@ class StudentViewSet(viewsets.ModelViewSet):
         actions = {
             'list': StudentListModelSerializer,
             'create': StudentCreateModelSerializer,
-            'update': StudentCreateModelSerializer
+            'update': StudentCreateModelSerializer,
+            'retrieve': StudentCreateModelSerializer
         }
         return actions.get(
             self.action,
