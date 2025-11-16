@@ -336,3 +336,6 @@ class FavoritosViewSet(viewsets.ModelViewSet):
             'create': FavoritosCreateModelSerializer
         }
         return actions.get(self.action, super().get_serializer_class())
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
