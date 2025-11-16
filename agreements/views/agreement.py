@@ -326,7 +326,7 @@ class ToggleStatusAgreementView(APIView):
 class FavoritosViewSet(viewsets.ModelViewSet):
     
     serializer_class = FavoritosModelSerializer
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post', 'delete']
 
     def get_queryset(self):
         return Favoritos.objects.filter(user=self.request.user)

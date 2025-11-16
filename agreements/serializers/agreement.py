@@ -146,7 +146,9 @@ class AgreementNestedCompanySerializer(serializers.ModelSerializer):
             'name',
             'initial_date',
             'end_date',
-            'description'
+            'description',
+            'status',
+            'scope'
         ]
 
 class FavoritosModelSerializer(serializers.ModelSerializer):
