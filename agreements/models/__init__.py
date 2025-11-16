@@ -2,7 +2,8 @@ from .agreement import (
     Agreement,
     AgreementStudentThrough,
     AgreementDocumentThrough,
-    AgreementDocumentComment
+    AgreementDocumentComment,
+    Favoritos
 )
 from .document import (
     DocumentAgreement

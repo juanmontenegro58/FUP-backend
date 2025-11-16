@@ -5,5 +5,6 @@ from .document_agreement import (
 from .agreement import (
     AgreementViewSet,
     UpdateAgreementDocumentStatusView,
-    ToggleStatusAgreementView
+    ToggleStatusAgreementView,
+    FavoritosViewSet
 )

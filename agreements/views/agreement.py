@@ -18,6 +18,8 @@ from drf_spectacular.utils import (
     extend_schema_view
 )
 
+from agreements.models.agreement import Favoritos
+
 from ..models import (
     Agreement
 )
@@ -26,7 +28,9 @@ from ..serializers.agreement import (
     AgreementDetailModelSerializer,
     AgreementDocumentUploadSerializer,
     AgreementAssignStudentSerializer,
-    AgreementDocumentChangeStateSerializer
+    AgreementDocumentChangeStateSerializer,
+    FavoritosModelSerializer,
+    FavoritosCreateModelSerializer
 )
 from ..serializers.document_agreement import (
     AgreementDocumentThroughModelSerializer
@@ -318,3 +322,17 @@ class ToggleStatusAgreementView(APIView):
                 status = status.HTTP_500_INTERNAL_SERVER_ERROR
             )
         return Response(status = status.HTTP_200_OK)
+    
+class FavoritosViewSet(viewsets.ModelViewSet):
+    
+    serializer_class = FavoritosModelSerializer
+    http_method_names = ['get', 'post']
+
+    def get_queryset(self):
+        return Favoritos.objects.filter(user=self.request.user)
+
+    def get_serializer_class(self):
+        actions = {
+            'create': FavoritosCreateModelSerializer
+        }
+        return actions.get(self.action, super().get_serializer_class())

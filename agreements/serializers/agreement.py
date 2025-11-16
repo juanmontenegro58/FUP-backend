@@ -6,7 +6,8 @@ from django.core.exceptions import (
 from ..models import (
     Agreement,
     DocumentAgreement,
-    AgreementDocumentThrough
+    AgreementDocumentThrough,
+    Favoritos
 )
 from .document_agreement import (
     AgreementDocumentThroughModelSerializer
@@ -147,3 +148,16 @@ class AgreementNestedCompanySerializer(serializers.ModelSerializer):
             'end_date',
             'description'
         ]
+
+class FavoritosModelSerializer(serializers.ModelSerializer):
+
+    agreement = AgreementNestedCompanySerializer()
+    class Meta:
+        model = Favoritos
+        fields = '__all__'
+
+class FavoritosCreateModelSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Favoritos
+        fields = '__all__'

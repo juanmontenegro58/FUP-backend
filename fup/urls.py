@@ -29,7 +29,8 @@ from drf_spectacular.views import (
 
 from agreements.views import (
     AgreementViewSet,
-    DocumentAgreementViewSet
+    DocumentAgreementViewSet,
+    FavoritosViewSet
 )
 from companies.views import (
     CompanyViewSet,
@@ -65,6 +66,7 @@ router.register(r'practices', PracticeViewSet, basename = 'practice')
 router.register(r'practical-offers', PracticalOfferViewSet, basename = 'practical-offer')
 router.register(r'users', UserViewSet, basename = 'user')
 router.register(r'roles', RoleViewSet, basename = 'role')
+router.register(r'favoritos', FavoritosViewSet, basename = 'favorito')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

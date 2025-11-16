@@ -286,3 +286,30 @@ class AgreementDocumentComment(TimeStampedBaseModel):
 
     def __str__(self):
         return self.new_state
+    
+
+class Favoritos(TimeStampedBaseModel):
+
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete = models.CASCADE,
+        verbose_name = 'Usuario'
+    )
+    agreement = models.ForeignKey(
+        Agreement,
+        on_delete = models.CASCADE,
+        verbose_name = 'Convenio'
+    )   
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name_plural: str = 'Convenios Favoritos'
+        constraints = [
+            models.UniqueConstraint(
+                fields = ['user', 'agreement'],
+                name = 'unique_user_agreement_favorite'
+            )
+        ]
+
+    def __str__(self):
+        return f'{self.user} - {self.agreement}'
